@@ -3,7 +3,7 @@
                     xmlns:sys="clr-namespace:System;assembly=System.Runtime">
     <sys:String x:Key="AppName">Plus One Trainer</sys:String>
     <sys:String x:Key="AppTagline">One less hassle, one more convenience</sys:String>
-    <sys:String x:Key="VersionLabel">1.0 Beta</sys:String>
+    <sys:String x:Key="VersionLabel">1.0 Beta 2</sys:String>
     <sys:String x:Key="NavConvenience">⌂  Convenience</sys:String>
     <sys:String x:Key="NavChallenge">⚑  Challenge</sys:String>
     <sys:String x:Key="NavModes">▦  Hidden modes</sys:String>
@@ -97,6 +97,7 @@
 
     <sys:String x:Key="LabTitle">Test workshop</sys:String>
     <sys:String x:Key="LabSubtitle">Place test objects in an I, Zombie-like workflow with battle, row-count, and special-zombie checks.</sys:String>
+    <sys:String x:Key="RemoteCallsBeta2Note">Beta 2 recognizes the official Steam wrapper, but zombie, ladder, and Night Roof operations depend on unverified internal game calls and remain disabled. Health bars, speed, auto collect, and ordinary cheats are ready for testing.</sys:String>
     <sys:String x:Key="ZombieSpawner">Place a zombie</sys:String>
     <sys:String x:Key="ZombieType">Zombie type</sys:String>
     <sys:String x:Key="Row">Row</sys:String>
@@ -143,7 +144,7 @@
     <sys:String x:Key="Chinese">简体中文</sys:String>
     <sys:String x:Key="English">English</sys:String>
     <sys:String x:Key="Compatibility">Compatibility</sys:String>
-    <sys:String x:Key="CompatibilityText">Version 1.0 enables writes only for English Steam GOTY 1.2.0.1096 on the SHA-256 allow-list. Other builds are status-only.</sys:String>
+    <sys:String x:Key="CompatibilityText">Beta 2 supports the allow-listed English Steam GOTY 1.2.0.1096 executable and its official Steam wrapper runtime timestamp 0x48ECEE74; runtime object checks still must pass.</sys:String>
     <sys:String x:Key="Implementation">Implementation</sys:String>
     <sys:String x:Key="ImplementationText">External x86 utility using Win32 process-memory APIs and short remote code thunks to call the game’s own object-creation functions. No DLL injection, EXE edits, or Steam/DRM bypass.</sys:String>
     <sys:String x:Key="References">References &amp; acknowledgements</sys:String>
@@ -166,8 +167,9 @@
     <sys:String x:Key="ErrorPatchOwnership">Patch bytes changed externally; Plus One Trainer refused to overwrite them.</sys:String>
     <sys:String x:Key="ErrorRemoteBusy">A previous internal game call is still running; the new call was blocked.</sys:String>
     <sys:String x:Key="ErrorRemoteTimeout">An internal game call timed out; the safety guard stays owned until it exits.</sys:String>
+    <sys:String x:Key="ErrorRemoteCallsUnavailable">Beta 2 has not verified internal game functions in the official Steam wrapper runtime; the test workshop and Night Roof remain disabled.</sys:String>
     <sys:String x:Key="ErrorAdventureRequired">Complete Adventure once before revealing the Limbo Page.</sys:String>
-    <sys:String x:Key="ErrorBobsledUnavailable">Bobsled Team creates four zombies at once. This candidate blocks forced placement until all four can be tracked and cleared safely. Other IDs 0–32 remain available under their guardrails.</sys:String>
+    <sys:String x:Key="ErrorBobsledUnavailable">Bobsled Team creates four zombies at once. Beta 2 disables all internal spawn calls; a later build must also track and clear exactly those four before enabling it.</sys:String>
     <sys:String x:Key="ErrorInvalidNumericSettings">Invalid numeric settings. Check the multipliers, start index, and maximum.</sys:String>
     <sys:String x:Key="RemoteCleanupWaiting">Waiting for the internal game call to finish and restoring its guard. Do not force-close the trainer.</sys:String>
 </ResourceDictionary>

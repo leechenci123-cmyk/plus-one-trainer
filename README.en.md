@@ -10,9 +10,9 @@ A convenience-first external utility for the classic single-player PC release of
 - Game speed from `0.25×` to `10×` and auto-collection are implemented; every speed tier and pickup type remains on the live-test checklist.
 - Toggleable read-only health bars for all plants and zombies, with zombie bars continuously following position. Coordinates and DPI scaling remain on the live-test checklist.
 - Reveals the original Limbo Page for hidden Day/Night/Fog/Roof Endless modes and Limbo mini-games. Pool Endless remains on the normal Survival page.
-- Night Roof is honestly labeled a scene-mixing experiment for a running Roof Endless battle—not an alleged hidden original mode.
+- Night Roof is honestly labeled a scene-mixing experiment—not an alleged hidden original mode—and its entry point remains disabled in Beta 2.
 - The spawn-count, wave-speed, full durability, and advanced-growth UI and calculations are complete. The candidate disables Apply until its background object transaction passes live verification.
-- A test workshop catalogs zombie IDs `0–32`, including Yeti, both Gargantuars, and a guarded Dr. Zomboss path. Forced Bobsled Team placement is disabled in the candidate. Standalone ladders require a Wall-nut, Tall-nut, or Pumpkin.
+- A test workshop catalogs zombie IDs `0–32`, including Yeti and both Gargantuars. All spawn and ladder buttons remain disabled in Beta 2 pending live verification of internal calls.
 - A save vault performs whole-directory snapshots, per-file SHA-256 verification, and automatic pre-restore backups without editing profile fields.
 - Simplified Chinese and English interface and READMEs, with bilingual summaries or English details in technical documents.
 
@@ -24,19 +24,19 @@ Version 1.0 enables writes only for the allow-listed **English Steam GOTY 1.2.0.
 
 ```text
 SHA-256  868F8E2BAB0D6A7EF8AFC4C5960C608ECCEF82BD086BD6E0C0E2670199A5CA45
-Runtime PE timestamp  0x4D02B058
+Runtime PE timestamp  0x4D02B058 or official Steam wrapper 0x48ECEE74
 ```
 
-Unknown versions stay read-only. Because Steam wraps the file on disk, the trainer validates the unpacked running image as well as the disk hash; a filename or FileVersion match is not sufficient.
+Unknown versions stay read-only. Beta 2 accepts the known official Steam wrapper only when its disk hash, x86 architecture, fixed image base, and live game objects all pass validation; a filename or FileVersion match is not sufficient.
 
 ## Use
 
-1. Download and extract `Plus-One-Trainer-1.0.0-beta.1-win-x86.zip` from GitHub Releases.
+1. Download and extract `Plus-One-Trainer-1.0.0-beta.2-win-x86.zip` from GitHub Releases.
 2. Start your legally obtained Steam copy, then run `PlusOneTrainer.exe`.
 3. Wait for the green Attached status. Create a Save Vault snapshot before trying experimental features.
 4. A normal trainer exit restores code patches still owned by this tool. If an internal call times out, the window waits for safe cleanup before exiting.
 
-This is **1.0 Beta** (technical version `1.0.0-beta.1`). It must not be promoted to stable `1.0.0` until the [live-test checklist](docs/LIVE_TEST_CHECKLIST.md) passes. Advanced Pause and challenge-rule writes intentionally remain disabled; an unavailable feature is not a malfunction.
+This is **1.0 Beta 2** (technical version `1.0.0-beta.2`). It fixes false rejection of official Steam wrapper timestamp `0x48ECEE74`. It must not be promoted to stable `1.0.0` until the [live-test checklist](docs/LIVE_TEST_CHECKLIST.md) passes. Test workshop, Night Roof, Advanced Pause, and challenge-rule writes intentionally remain disabled.
 
 Administrator rights are not normally required. Security software may flag any external trainer for opening and writing another process; compare the release hash and inspect this source instead of adding broad antivirus exclusions.
 
@@ -57,7 +57,7 @@ Windows 10/11 and the .NET 8 SDK are required:
 ```powershell
 ./scripts/build.ps1 -Configuration Release
 ./scripts/test.ps1
-./scripts/package.ps1 -Version 1.0.0-beta.1
+./scripts/package.ps1 -Version 1.0.0-beta.2
 ```
 
 The release is a self-contained single-file `win-x86` application.

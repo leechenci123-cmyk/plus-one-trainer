@@ -17,7 +17,8 @@ var tests = new (string Name, Action Run)[]
     ("Save vault blocks traversal", SaveVaultBlocksTraversal),
     ("Profile patch invariants", ProfilePatchInvariants),
     ("Health bar durability math", HealthBarDurabilityMath),
-    ("Main window resource references", MainWindowResourceReferences)
+    ("Main window resource references", MainWindowResourceReferences),
+    ("Steam runtime timestamp gate", SteamRuntimeTimestampGate)
 };
 
 var failed = 0;
@@ -248,6 +249,14 @@ static void MainWindowResourceReferences()
     var missing = references.Where(key => !resources.Contains(key)).ToArray();
     if (missing.Length > 0)
         throw new InvalidOperationException("Missing XAML resources: " + string.Join(", ", missing));
+}
+
+static void SteamRuntimeTimestampGate()
+{
+    Equal(true, GameSession.IsSupportedRuntimeStamp(0x4D02B058));
+    Equal(true, GameSession.IsSupportedRuntimeStamp(0x48ECEE74));
+    Equal(false, GameSession.IsSupportedRuntimeStamp(0));
+    Equal(false, GameSession.IsSupportedRuntimeStamp(0x49ECF563));
 }
 
 static IEnumerable<string> ExtractResourceKeys(string value)

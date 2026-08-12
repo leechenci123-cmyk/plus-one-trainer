@@ -68,6 +68,7 @@ public partial class MainWindow : Window
         UpdateSaveLocation();
         _uiReady = true;
         UpdateChallengeCapability();
+        UpdateRemoteCallCapability();
         UpdateHealthBarControls();
         AttachGame(showErrors: false);
         _statusTimer.Start();
@@ -199,6 +200,7 @@ public partial class MainWindow : Window
                 SetAttachmentState(AttachmentState.Attached, result.Details);
                 UpdateAdvancedPauseCapability();
                 UpdateChallengeCapability();
+                UpdateRemoteCallCapability();
                 UpdateSaveLocation();
                 ShowToast(result.Details);
             }
@@ -343,6 +345,15 @@ public partial class MainWindow : Window
         ChallengeApplyButton.IsEnabled = supported;
         if (!supported)
             DifficultyEnabledCheck.IsChecked = false;
+    }
+
+    private void UpdateRemoteCallCapability()
+    {
+        var supported = _engine?.SupportsRemoteCalls == true;
+        NightRoofButton.IsEnabled = supported;
+        SpawnZombieButton.IsEnabled = supported;
+        PlaceLadderButton.IsEnabled = supported;
+        ClearLabButton.IsEnabled = supported;
     }
 
     private void ApplyChallenge_Click(object sender, RoutedEventArgs e)
@@ -505,6 +516,7 @@ public partial class MainWindow : Window
         SetAttachmentState(_state, _stateDetails);
         UpdateAdvancedPauseCapability();
         UpdateChallengeCapability();
+        UpdateRemoteCallCapability();
         UpdatePauseButton();
         LimboButton.Content = LocalizationService.Text(_limboEnabled ? "LockLimbo" : "UnlockLimbo");
         UpdateSaveLocation();

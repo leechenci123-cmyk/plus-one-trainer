@@ -53,7 +53,7 @@
                                 CornerRadius="10" Padding="12,5" Margin="0,0,0,4" Effect="{StaticResource SmallShadow}">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="{DynamicResource AppName}" FontWeight="Bold" FontSize="17" />
-                                <TextBlock Text="  1.0 Beta" FontWeight="Bold" Foreground="{StaticResource LeafDark}" />
+                                <TextBlock Text="  1.0 Beta 2" FontWeight="Bold" Foreground="{StaticResource LeafDark}" />
                             </StackPanel>
                         </Border>
                     </Grid>
@@ -290,7 +290,7 @@
                                     <TextBlock Text="{DynamicResource ExperimentalModes}" Style="{StaticResource SectionTitle}" />
                                     <TextBlock Text="{DynamicResource NightRoof}" FontWeight="Bold" />
                                     <TextBlock Text="{DynamicResource NightRoofDescription}" Margin="0,6,0,0" />
-                                    <Button x:Name="NightRoofButton" Content="{DynamicResource ApplyNightRoof}" Style="{StaticResource SecondaryButton}" Margin="0,14,0,0" Click="NightRoof_Click" />
+                                    <Button x:Name="NightRoofButton" Content="{DynamicResource ApplyNightRoof}" Style="{StaticResource SecondaryButton}" Margin="0,14,0,0" Click="NightRoof_Click" IsEnabled="False" />
                                 </StackPanel>
                             </Border>
                         </Grid>
@@ -308,6 +308,9 @@
                     <StackPanel MaxWidth="1040">
                         <TextBlock Text="{DynamicResource LabTitle}" Style="{StaticResource PageTitle}" />
                         <TextBlock Text="{DynamicResource LabSubtitle}" Style="{StaticResource PageSubtitle}" />
+                        <Border Style="{StaticResource Card}" Background="#FFF1C8" BorderBrush="#C99942">
+                            <TextBlock Text="{DynamicResource RemoteCallsBeta2Note}" TextWrapping="Wrap" />
+                        </Border>
                         <Grid>
                             <Grid.ColumnDefinitions><ColumnDefinition Width="1.2*" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
                             <Border Style="{StaticResource Card}" Margin="0,0,16,16">
@@ -320,7 +323,7 @@
                                         <StackPanel Margin="0,0,8,0"><TextBlock Text="{DynamicResource Row}" /><ComboBox x:Name="ZombieRowCombo" Margin="0,6,0,14" /></StackPanel>
                                         <StackPanel Grid.Column="1" Margin="8,0,0,0"><TextBlock Text="{DynamicResource Column}" /><ComboBox x:Name="ZombieColumnCombo" Margin="0,6,0,14" /></StackPanel>
                                     </Grid>
-                                    <Button Content="{DynamicResource SpawnZombie}" Style="{StaticResource PrimaryButton}" Click="SpawnZombie_Click" />
+                                    <Button x:Name="SpawnZombieButton" Content="{DynamicResource SpawnZombie}" Style="{StaticResource PrimaryButton}" Click="SpawnZombie_Click" IsEnabled="False" />
                                     <Border Background="#F5D7CB" CornerRadius="10" Padding="10" Margin="0,12,0,0">
                                         <TextBlock Text="{DynamicResource BossWarning}" FontSize="12" Foreground="#753B31" />
                                     </Border>
@@ -335,7 +338,7 @@
                                         <StackPanel Margin="0,0,8,0"><TextBlock Text="{DynamicResource Row}" /><ComboBox x:Name="LadderRowCombo" Margin="0,6,0,14" /></StackPanel>
                                         <StackPanel Grid.Column="1" Margin="8,0,0,0"><TextBlock Text="{DynamicResource Column}" /><ComboBox x:Name="LadderColumnCombo" Margin="0,6,0,14" /></StackPanel>
                                     </Grid>
-                                    <Button Content="{DynamicResource PlaceLadder}" Style="{StaticResource PrimaryButton}" Click="PlaceLadder_Click" />
+                                    <Button x:Name="PlaceLadderButton" Content="{DynamicResource PlaceLadder}" Style="{StaticResource PrimaryButton}" Click="PlaceLadder_Click" IsEnabled="False" />
                                 </StackPanel>
                             </Border>
                         </Grid>
@@ -346,7 +349,7 @@
                                     <TextBlock Text="{DynamicResource ClearLabObjects}" FontWeight="Bold" FontSize="16" />
                                     <TextBlock Text="{DynamicResource ClearLabHint}" Style="{StaticResource Caption}" Margin="0,5,18,0" />
                                 </StackPanel>
-                                <Button Grid.Column="1" Content="{DynamicResource ClearLabObjects}" Style="{StaticResource DangerButton}" Click="ClearLab_Click" />
+                                <Button x:Name="ClearLabButton" Grid.Column="1" Content="{DynamicResource ClearLabObjects}" Style="{StaticResource DangerButton}" Click="ClearLab_Click" IsEnabled="False" />
                             </Grid>
                         </Border>
                     </StackPanel>

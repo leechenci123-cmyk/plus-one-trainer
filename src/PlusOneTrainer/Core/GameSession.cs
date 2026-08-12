@@ -14,6 +14,7 @@ public sealed record AttachmentResult(AttachmentState State, GameSession? Sessio
 public sealed class GameSession : IDisposable
 {
     private const uint RuntimeTimeDateStamp1096 = 0x4D02B058;
+    private const uint SteamWrapperTimeDateStamp1096 = 0x48ECEE74;
     private readonly Dictionary<uint, MemoryPatch> _ownedPatches = [];
     private readonly object _patchGate = new();
     private bool _disposed;
@@ -24,12 +25,16 @@ public sealed class GameSession : IDisposable
     public AdvancedPauseController AdvancedPause { get; }
     public IntPtr GameWindow => Memory.Process.MainWindowHandle;
     public string ExecutablePath { get; }
+    public uint RuntimeTimeDateStamp { get; }
+    public bool IsSteamWrapperRuntime => RuntimeTimeDateStamp == SteamWrapperTimeDateStamp1096;
+    public bool SupportsRemoteCalls => false;
 
-    private GameSession(ProcessMemory memory, GameVersionProfile profile, string executablePath)
+    private GameSession(ProcessMemory memory, GameVersionProfile profile, string executablePath, uint runtimeTimeDateStamp)
     {
         Memory = memory;
         Profile = profile;
         ExecutablePath = executablePath;
+        RuntimeTimeDateStamp = runtimeTimeDateStamp;
         Calls = new RemoteGameCalls(memory, profile);
         AdvancedPause = AdvancedPauseController.Detect(memory);
     }
@@ -68,11 +73,18 @@ public sealed class GameSession : IDisposable
                         return new AttachmentResult(AttachmentState.Unsupported, null,
                             $"Runtime architecture: machine=0x{machine:X4}, optional=0x{optionalMagic:X4}");
                     }
-                    if (runtimeStamp != RuntimeTimeDateStamp1096)
+                    if (!IsSupportedRuntimeStamp(runtimeStamp))
                     {
                         memory.Dispose();
                         return new AttachmentResult(AttachmentState.Unsupported, null,
                             $"Runtime PE timestamp: 0x{runtimeStamp:X8}");
+                    }
+                    if (runtimeStamp == SteamWrapperTimeDateStamp1096 &&
+                        memory.ImageBase != GameVersionProfile.PreferredImageBase)
+                    {
+                        memory.Dispose();
+                        return new AttachmentResult(AttachmentState.Unsupported, null,
+                            $"Steam wrapper image base: 0x{memory.ImageBase:X8}");
                     }
 
                     var lawn = memory.ResolveLawn(profile);
@@ -105,7 +117,10 @@ public sealed class GameSession : IDisposable
                     }
 
                     return new AttachmentResult(AttachmentState.Attached,
-                        new GameSession(memory, profile, path), profile.DisplayName);
+                        new GameSession(memory, profile, path, runtimeStamp),
+                        runtimeStamp == SteamWrapperTimeDateStamp1096
+                            ? profile.DisplayName + " · Steam wrapper verified"
+                            : profile.DisplayName);
                 }
                 catch
                 {
@@ -122,6 +137,9 @@ public sealed class GameSession : IDisposable
 
         return new AttachmentResult(AttachmentState.NotRunning, null, "No readable game process was found.");
     }
+
+    public static bool IsSupportedRuntimeStamp(uint stamp) =>
+        stamp is RuntimeTimeDateStamp1096 or SteamWrapperTimeDateStamp1096;
 
     public bool IsBattle => ReadGameUi() == 3;
 

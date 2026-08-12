@@ -23,7 +23,7 @@ The Steam-specific address profile and external-call ABI were cross-checked agai
 - [zombie and ladder call conventions](https://github.com/lmintlcx/pvztoolkit/blob/99fcdecf53f80bd02d784eee243fa5b12a9e59c1/src/pvz.cpp#L1083-L1281);
 - [bounded remote-code execution and cleanup](https://github.com/lmintlcx/pvztoolkit/blob/99fcdecf53f80bd02d784eee243fa5b12a9e59c1/src/code.cpp#L112-L145).
 
-Valve documents that the [Steam DRM wrapper modifies an application executable](https://partner.steamgames.com/doc/features/drm), which is why this tool validates the unpacked running image in addition to the disk hash.
+Valve documents that the [Steam DRM wrapper modifies an application executable](https://partner.steamgames.com/doc/features/drm). Beta 2 therefore accepts the known wrapper marker only together with the exact disk hash, x86 architecture, fixed image base, and live object sanity checks.
 
 ## Modes and terminology
 

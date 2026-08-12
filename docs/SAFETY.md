@@ -8,7 +8,7 @@ All memory writes require both:
 
 1. the exact allow-listed executable SHA-256:
    `868F8E2BAB0D6A7EF8AFC4C5960C608ECCEF82BD086BD6E0C0E2670199A5CA45`; and
-2. the unpacked running process PE timestamp `0x4D02B058`.
+2. runtime timestamp `0x4D02B058`, or the exact allow-listed official Steam wrapper timestamp `0x48ECEE74` with fixed image base and runtime object checks.
 
 This matters because the Steam file on disk is DRM-wrapped and has a different disk timestamp. A matching filename or `FileVersion` is not enough. Every persistent code patch also verifies its original bytes before changing or restoring them.
 
@@ -22,6 +22,7 @@ This matters because the Steam file on disk is DRM-wrapped and has a different d
 - Advanced Pause has no verified Steam 1096 runtime signature in this release candidate. Its button, hotkey, and focus-loss automation are disabled; no guessed `mStepMode` offset or AvZ 1051 address is used.
 - Health bars use bulk `ReadProcessMemory` snapshots only. The transparent overlay is click-through, defaults off, and hides outside a foreground battle; it never writes health values.
 - Challenge-rule background writes are disabled in this candidate until their per-object identity transaction passes a live Steam 1096 test.
+- Steam-wrapper Beta 2 keeps all internal-function calls disabled, including the test workshop and Night Roof. Accepting the wrapper timestamp alone never enables those calls.
 - If a remote call exceeds its timeout, the code/data pages and guard are retained, new calls are blocked, and application shutdown waits for the game thread to finish before cleanup.
 
 ## Save data

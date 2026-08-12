@@ -1,15 +1,15 @@
 # 1.0 实机测试清单 / Live-test checklist
 
-当前状态：**1.0 Beta**（`1.0.0-beta.1`）。本文件只列待测项目；编写和离线测试期间不得自动启动游戏。只有用户明确说当前可以占用 Steam 家庭库时，才执行这些测试。
+当前状态：**1.0 Beta 2**（`1.0.0-beta.2`）。本文件只列待测项目；编写和离线测试期间不得自动启动游戏。只有用户明确说当前可以占用 Steam 家庭库时，才执行这些测试。
 
-Current status: **1.0 Beta** (`1.0.0-beta.1`). This file records pending live tests. Development and offline tests must never start the game automatically. Run these only after the user explicitly confirms that the shared Steam library is available.
+Current status: **1.0 Beta 2** (`1.0.0-beta.2`). This file records pending live tests. Development and offline tests must never start the game automatically. Run these only after the user explicitly confirms that the shared Steam library is available.
 
 ## 0. 前置保护 / Preconditions
 
 - [ ] 确认家庭库当前无人占用，并由用户明确授权本次启动。
 - [ ] 记录 `user1.dat`、`users.dat` 的大小、时间与 SHA-256；创建存档保险箱快照。
 - [ ] 从 Steam 正常启动 AppID 3590，不直接运行 DRM 包装 EXE。
-- [ ] 只读确认进程为 x86、磁盘 SHA-256、运行时 PE timestamp `0x4D02B058`、Lawn/Board/UI/scene 合理。
+- [ ] 只读确认进程为 x86、磁盘 SHA-256、运行时 PE timestamp 为 `0x4D02B058` 或官方 Steam 包装 `0x48ECEE74`，且 Lawn/Board/UI/scene 合理。
 - [ ] 所有补丁与调用目标先验证原字节/短签名；任何不符立即停止，不尝试替代地址。
 
 ## 1. 高级暂停 / Advanced Pause
@@ -62,4 +62,4 @@ Current status: **1.0 Beta** (`1.0.0-beta.1`). This file records pending live te
 - [ ] 中文/英文 UI 全页截图，无截断、乱码、重叠；100%/125%/150% DPI。
 - [ ] Windows 10、Windows 11；普通权限；无 .NET 预装机器运行 self-contained 包。
 - [ ] Release ZIP 内容、EXE x86/FileVersion、ZIP 与 EXE SHA-256、.NET 许可证文件、源码 tag 一致。
-- [ ] 全部关键项通过后才把 `1.0.0-beta.1` 提升为 `1.0.0`。
+- [ ] 全部关键项通过后才把 `1.0.0-beta.2` 提升为 `1.0.0`。

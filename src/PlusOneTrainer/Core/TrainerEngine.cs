@@ -26,6 +26,7 @@ public sealed class TrainerEngine : IDisposable
     public SaveVaultService SaveVault { get; }
     public bool SupportsAdvancedPause => Session.AdvancedPause.IsSupported;
     public bool SupportsChallengeRules => Difficulty.IsSupported;
+    public bool SupportsRemoteCalls => Session.SupportsRemoteCalls;
     public string AdvancedPauseUnavailableReason => Session.AdvancedPause.UnavailableReason;
     public bool AdvancedPaused => Session.AdvancedPause.IsPaused;
     public double LastSpeed { get; private set; } = 1;
@@ -50,7 +51,10 @@ public sealed class TrainerEngine : IDisposable
     {
         multiplier = Math.Clamp(multiplier, 0.1, 10);
         var lawn = RequireLawn();
-        _originalFrameDuration ??= Session.Memory.ReadInt32(lawn + Session.Profile.FrameDuration);
+        var current = Session.Memory.ReadInt32(lawn + Session.Profile.FrameDuration);
+        if (current is < 1 or > 100)
+            throw new TrainerException("ErrorRuntimeSignature", "Frame duration failed its runtime range check.");
+        _originalFrameDuration ??= current;
         var duration = Math.Clamp((int)Math.Round(10.0 / multiplier), 1, 100);
         Session.Memory.WriteInt32(lawn + Session.Profile.FrameDuration, duration);
         _lastWrittenFrameDuration = duration;
@@ -80,12 +84,17 @@ public sealed class TrainerEngine : IDisposable
     {
         var lawn = RequireLawn();
         var userData = Session.Memory.ReadUInt32(lawn + Session.Profile.UserData);
-        return userData != 0 &&
-               Session.Memory.ReadInt32(userData + Session.Profile.PlayerAdventurePlaythrough) >= 1;
+        if (userData == 0)
+            return false;
+        var playthrough = Session.Memory.ReadInt32(userData + Session.Profile.PlayerAdventurePlaythrough);
+        if (playthrough is < 0 or > 100)
+            throw new TrainerException("ErrorRuntimeSignature", "Adventure progress failed its runtime range check.");
+        return playthrough >= 1;
     }
 
     public void SetNightRoofExperiment(bool enabled)
     {
+        RequireRemoteCalls();
         RequireBattle();
         if (Session.ReadGameMode() != 15)
             throw new InvalidOperationException("Start Roof Endless first, then apply the Night Roof experiment.");
@@ -96,7 +105,10 @@ public sealed class TrainerEngine : IDisposable
     {
         var lawn = RequireLawn();
         var address = lawn + Session.Profile.FreePlanting;
-        _originalFreePlanting ??= Session.Memory.ReadByte(address);
+        var current = Session.Memory.ReadByte(address);
+        if (current is not (0 or 1) && !_lastWrittenFreePlanting.HasValue)
+            throw new TrainerException("ErrorRuntimeSignature", "Free-planting state failed its runtime range check.");
+        _originalFreePlanting ??= current;
         if (enabled)
         {
             Session.Memory.WriteByte(address, 1);
@@ -113,11 +125,16 @@ public sealed class TrainerEngine : IDisposable
     public void SetSun(int sun)
     {
         RequireBattleOrSeedChooser();
-        Session.Memory.WriteInt32(Session.RequireBoard() + Session.Profile.Sun, Math.Clamp(sun, 0, 999_999));
+        var address = Session.RequireBoard() + Session.Profile.Sun;
+        var current = Session.Memory.ReadInt32(address);
+        if (current is < 0 or > 999_999)
+            throw new TrainerException("ErrorRuntimeSignature", "Sun value failed its runtime range check.");
+        Session.Memory.WriteInt32(address, Math.Clamp(sun, 0, 999_999));
     }
 
     public IReadOnlyList<uint> SpawnZombie(int row, int column, int type)
     {
+        RequireRemoteCalls();
         RequireBattle();
         ValidateCell(row, column);
         if (type is < 0 or > 32)
@@ -142,6 +159,7 @@ public sealed class TrainerEngine : IDisposable
 
     public uint PlaceLadder(int row, int column)
     {
+        RequireRemoteCalls();
         RequireBattle();
         ValidateCell(row, column);
         if (!HasLadderPlant(row, column))
@@ -165,6 +183,7 @@ public sealed class TrainerEngine : IDisposable
 
     public void ClearLabObjects()
     {
+        RequireRemoteCalls();
         if (!Session.Memory.IsAlive)
             return;
         RequireBattle();
@@ -388,6 +407,13 @@ public sealed class TrainerEngine : IDisposable
     {
         if (Session.ReadGameUi() is not (2 or 3))
             throw new TrainerException("BattleNeeded", "A battle or seed chooser must be active.");
+    }
+
+    private void RequireRemoteCalls()
+    {
+        if (!SupportsRemoteCalls)
+            throw new TrainerException("ErrorRemoteCallsUnavailable",
+                "Internal game calls remain disabled for the Steam wrapper runtime in Beta 2.");
     }
 
     public void Dispose()
