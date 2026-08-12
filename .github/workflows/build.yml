@@ -1,0 +1,33 @@
+name: build
+
+on:
+  push:
+    branches: [main, 'codex/**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.424'
+      - name: Build
+        shell: pwsh
+        run: ./scripts/build.ps1 -Configuration Release
+      - name: Test
+        shell: pwsh
+        run: ./scripts/test.ps1
+      - name: Package
+        shell: pwsh
+        run: ./scripts/package.ps1 -Version 1.0.0-beta.1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Plus-One-Trainer-1.0.0-beta.1-win-x86
+          path: artifacts/package/*.zip
+          if-no-files-found: error

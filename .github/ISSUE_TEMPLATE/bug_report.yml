@@ -1,0 +1,23 @@
+name: Bug report
+description: Report a reproducible Plus One Trainer problem
+title: "[Bug] "
+labels: [bug]
+body:
+  - type: checkboxes
+    attributes:
+      label: Safety check
+      options:
+        - label: I backed up my save before reproducing this issue.
+          required: true
+        - label: I am using the English Steam GOTY 1.2.0.1096 executable.
+          required: true
+  - type: textarea
+    attributes:
+      label: What happened?
+      description: Include the feature, scene, mode, row/column, and exact steps.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Diagnostics
+      description: Include the trainer version and status-bar details. Never upload save data unless you intend to share it.

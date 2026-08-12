@@ -1,0 +1,471 @@
+<Window x:Class="PlusOneTrainer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{DynamicResource AppName}" Width="1180" Height="780"
+        MinWidth="1000" MinHeight="680" WindowStartupLocation="CenterScreen"
+        Loaded="Window_Loaded" Closing="Window_Closing">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="54" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="34" />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Background="#F8F1DF" BorderBrush="#C9B78E" BorderThickness="0,0,0,1">
+            <Grid Margin="18,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Border x:Name="StatusDot" Width="12" Height="12" CornerRadius="6" Background="#C99942" Margin="0,0,10,0" />
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock x:Name="StatusText" Text="{DynamicResource StatusSearching}" FontWeight="SemiBold" />
+                    <TextBlock x:Name="StatusDetails" Margin="10,0,0,0" Foreground="#817465" FontSize="12" />
+                </StackPanel>
+                <Border x:Name="ReadOnlyPill" Grid.Column="2" Style="{StaticResource Pill}" Margin="10,0"
+                        Visibility="Collapsed" Background="#F1D5AA">
+                    <TextBlock Text="{DynamicResource StatusReadOnly}" FontSize="12" FontWeight="SemiBold" />
+                </Border>
+                <Button Grid.Column="3" Content="{DynamicResource AttachNow}" Style="{StaticResource SecondaryButton}"
+                        Padding="12,6" MinHeight="32" Click="Attach_Click" />
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="238" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Background="{StaticResource WoodDark}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="220" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid>
+                        <Ellipse Width="190" Height="190" Fill="#4D3728" />
+                        <Image Source="Assets/sprout-mechanic.png" Height="178" Stretch="Uniform" VerticalAlignment="Bottom" />
+                        <Border VerticalAlignment="Bottom" HorizontalAlignment="Center" Background="#EFD89B"
+                                CornerRadius="10" Padding="12,5" Margin="0,0,0,4" Effect="{StaticResource SmallShadow}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{DynamicResource AppName}" FontWeight="Bold" FontSize="17" />
+                                <TextBlock Text="  1.0 Beta" FontWeight="Bold" Foreground="{StaticResource LeafDark}" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                    <StackPanel Grid.Row="1" Margin="0,12,0,0">
+                        <Button x:Name="NavHome" Tag="Selected" Content="{DynamicResource NavConvenience}" Style="{StaticResource NavButton}" Click="Nav_Click" />
+                        <Button x:Name="NavChallenge" Content="{DynamicResource NavChallenge}" Style="{StaticResource NavButton}" Click="Nav_Click" />
+                        <Button x:Name="NavModes" Content="{DynamicResource NavModes}" Style="{StaticResource NavButton}" Click="Nav_Click" />
+                        <Button x:Name="NavLab" Content="{DynamicResource NavLab}" Style="{StaticResource NavButton}" Click="Nav_Click" />
+                        <Button x:Name="NavCheats" Content="{DynamicResource NavCheats}" Style="{StaticResource NavButton}" Click="Nav_Click" />
+                        <Button x:Name="NavVault" Content="{DynamicResource NavVault}" Style="{StaticResource NavButton}" Click="Nav_Click" />
+                        <Button x:Name="NavSettings" Content="{DynamicResource NavSettings}" Style="{StaticResource NavButton}" Click="Nav_Click" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="2" Margin="18,12,18,18">
+                        <TextBlock Text="{DynamicResource AppTagline}" Foreground="#E6D6B9" FontSize="12" TextAlignment="Center" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Column="1" Background="#E9E5D8">
+                <Ellipse Width="280" Height="180" Fill="#31B9D89A" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-80,-70,0" />
+                <Ellipse Width="220" Height="150" Fill="#25F3C96C" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="-70,0,0,-70" />
+
+                <!-- Page 0: Convenience -->
+                <ScrollViewer x:Name="PageHome" VerticalScrollBarVisibility="Auto" Padding="30,24,30,30">
+                    <StackPanel MaxWidth="1040">
+                        <TextBlock Text="{DynamicResource HomeTitle}" Style="{StaticResource PageTitle}" />
+                        <TextBlock Text="{DynamicResource HomeSubtitle}" Style="{StaticResource PageSubtitle}" />
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1.25*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" Style="{StaticResource Card}" Margin="0,0,16,16" Background="#F7EDC9">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                                        <TextBlock Text="{DynamicResource AdvancedPauseTitle}" Style="{StaticResource SectionTitle}" />
+                                        <Border Grid.Column="1" Style="{StaticResource Pill}" Background="#D8E7BD" VerticalAlignment="Top">
+                                            <TextBlock Text="{DynamicResource AdvancedPauseBadge}" FontSize="11" />
+                                        </Border>
+                                    </Grid>
+                                    <TextBlock Grid.Row="1" Text="{DynamicResource AdvancedPauseDescription}" Foreground="#655A4F" Margin="0,0,0,16" TextWrapping="Wrap" />
+                                    <Button x:Name="AdvancedPauseButton" Grid.Row="2" Content="{DynamicResource AdvancedPauseOff}"
+                                            Style="{StaticResource PrimaryButton}" Click="AdvancedPause_Click" IsEnabled="False" />
+                                </Grid>
+                            </Border>
+
+                            <Border Grid.Column="1" Style="{StaticResource Card}" Background="#E4EED7">
+                                <StackPanel>
+                                    <TextBlock Text="{DynamicResource SpeedTitle}" Style="{StaticResource SectionTitle}" />
+                                    <TextBlock Text="{DynamicResource SpeedDescription}" Style="{StaticResource Caption}" Margin="0,0,0,10" />
+                                    <ComboBox x:Name="SpeedCombo" SelectedIndex="4" Margin="0,0,0,10">
+                                        <ComboBoxItem Content="0.25×" Tag="0.25" />
+                                        <ComboBoxItem Content="0.5×" Tag="0.5" />
+                                        <ComboBoxItem Content="0.75×" Tag="0.75" />
+                                        <ComboBoxItem Content="1.0×" Tag="1" />
+                                        <ComboBoxItem Content="1.5×" Tag="1.5" />
+                                        <ComboBoxItem Content="2.0×" Tag="2" />
+                                        <ComboBoxItem Content="3.0×" Tag="3" />
+                                        <ComboBoxItem Content="5.0×" Tag="5" />
+                                        <ComboBoxItem Content="10.0×" Tag="10" />
+                                    </ComboBox>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition /></Grid.ColumnDefinitions>
+                                        <Button Content="{DynamicResource ApplySpeed}" Style="{StaticResource PrimaryButton}" Margin="0,0,6,0" Click="ApplySpeed_Click" />
+                                        <Button Grid.Column="1" Content="{DynamicResource ResetSpeed}" Style="{StaticResource SecondaryButton}" Margin="6,0,0,0" Click="ResetSpeed_Click" />
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="1.25*" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                            <Border Style="{StaticResource Card}" Margin="0,0,16,16">
+                                <StackPanel>
+                                    <TextBlock Text="{DynamicResource ConvenienceTitle}" Style="{StaticResource SectionTitle}" />
+                                    <CheckBox x:Name="AutoCollectCheck" Content="{DynamicResource AutoCollect}" Checked="AutoCollect_Changed" Unchecked="AutoCollect_Changed" />
+                                    <CheckBox x:Name="FocusPauseCheck" Content="{DynamicResource PauseOnFocusLoss}" IsEnabled="False" />
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="1" Style="{StaticResource Card}" Background="#FFF1C8">
+                                <StackPanel>
+                                    <TextBlock Text="{DynamicResource HotkeysTitle}" Style="{StaticResource SectionTitle}" />
+                                    <TextBlock Text="{DynamicResource HotkeyF3}" Margin="0,4" />
+                                    <TextBlock Text="{DynamicResource HotkeyF4}" Margin="0,4" />
+                                    <TextBlock Text="{DynamicResource HotkeyF8}" Margin="0,4" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <Border Style="{StaticResource Card}" Background="#E8F0DB" BorderBrush="#9CB47A">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1.25*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Margin="0,0,24,0">
+                                    <TextBlock Text="{DynamicResource HealthBarsTitle}" Style="{StaticResource SectionTitle}" />
+                                    <TextBlock Text="{DynamicResource HealthBarsDescription}" Foreground="#556149"
+                                               TextWrapping="Wrap" />
+                                    <Border Style="{StaticResource Pill}" HorizontalAlignment="Left" Margin="0,12,0,0"
+                                            Background="#D6E7BE">
+                                        <TextBlock Text="{DynamicResource HealthBarsReadOnly}" FontSize="11" />
+                                    </Border>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <CheckBox x:Name="HealthBarsCheck" Content="{DynamicResource HealthBarsEnabled}"
+                                              FontWeight="Bold" FontSize="15"
+                                              Checked="HealthBars_Changed" Unchecked="HealthBars_Changed" />
+                                    <StackPanel Margin="22,6,0,0">
+                                        <CheckBox x:Name="ZombieHealthBarsCheck" Content="{DynamicResource ZombieHealthBars}"
+                                                  IsChecked="True" IsEnabled="False"
+                                                  Checked="HealthBars_Changed" Unchecked="HealthBars_Changed" />
+                                        <CheckBox x:Name="PlantHealthBarsCheck" Content="{DynamicResource PlantHealthBars}"
+                                                  IsChecked="True" IsEnabled="False"
+                                                  Checked="HealthBars_Changed" Unchecked="HealthBars_Changed" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}" Background="#E2EDCF" BorderBrush="#88A867">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="✓" FontSize="28" Foreground="{StaticResource LeafDark}" Margin="0,0,14,0" />
+                                <StackPanel>
+                                    <TextBlock Text="{DynamicResource SafetyTitle}" FontWeight="Bold" FontSize="16" />
+                                    <TextBlock Text="{DynamicResource SafetyDescription}" Foreground="#556149" Margin="0,4,0,0" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- Page 1: Challenge -->
+                <ScrollViewer x:Name="PageChallenge" Visibility="Collapsed" VerticalScrollBarVisibility="Auto" Padding="30,24,30,30">
+                    <StackPanel MaxWidth="1040">
+                        <TextBlock Text="{DynamicResource ChallengeTitle}" Style="{StaticResource PageTitle}" />
+                        <TextBlock Text="{DynamicResource ChallengeSubtitle}" Style="{StaticResource PageSubtitle}" />
+                        <Border x:Name="ChallengeSettingsCard" Style="{StaticResource Card}" IsEnabled="False">
+                            <StackPanel>
+                                <CheckBox x:Name="DifficultyEnabledCheck" Content="{DynamicResource DifficultyEnabled}" FontWeight="Bold" FontSize="16" />
+                                <Grid Margin="0,12,0,16">
+                                    <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition /><ColumnDefinition /></Grid.ColumnDefinitions>
+                                    <StackPanel Margin="0,0,16,0">
+                                        <TextBlock Text="{DynamicResource SpawnCount}" FontWeight="SemiBold" />
+                                        <TextBox x:Name="SpawnCountBox" Text="1.0" Margin="0,6" />
+                                        <TextBlock Text="{DynamicResource SpawnCountHint}" Style="{StaticResource Caption}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Margin="8,0">
+                                        <TextBlock Text="{DynamicResource SpawnSpeed}" FontWeight="SemiBold" />
+                                        <TextBox x:Name="SpawnSpeedBox" Text="1.0" Margin="0,6" />
+                                        <TextBlock Text="{DynamicResource SpawnSpeedHint}" Style="{StaticResource Caption}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Margin="16,0,0,0">
+                                        <TextBlock Text="{DynamicResource Durability}" FontWeight="SemiBold" />
+                                        <TextBox x:Name="DurabilityBox" Text="1.0" Margin="0,6" />
+                                        <TextBlock Text="{DynamicResource DurabilityHint}" Style="{StaticResource Caption}" />
+                                    </StackPanel>
+                                </Grid>
+                                <Button x:Name="ChallengeApplyButton" Content="{DynamicResource ApplyChallenge}" Style="{StaticResource PrimaryButton}" HorizontalAlignment="Left" Click="ApplyChallenge_Click" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border x:Name="AdvancedChallengeCard" Style="{StaticResource Card}" Background="#F7EDCE" IsEnabled="False">
+                            <Expander IsExpanded="False">
+                                <Expander.Header><TextBlock Text="{DynamicResource AdvancedSettings}" FontSize="17" /></Expander.Header>
+                                <StackPanel Margin="0,16,0,0">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition /></Grid.ColumnDefinitions>
+                                        <StackPanel Margin="0,0,10,0">
+                                            <TextBlock Text="{DynamicResource GrowthUnit}" FontWeight="SemiBold" />
+                                            <ComboBox x:Name="GrowthUnitCombo" SelectedIndex="0" Margin="0,6,0,12">
+                                                <ComboBoxItem Content="{DynamicResource GrowthNone}" Tag="None" />
+                                                <ComboBoxItem Content="{DynamicResource GrowthWave}" Tag="Wave" />
+                                                <ComboBoxItem Content="{DynamicResource GrowthFlag}" Tag="Flag" />
+                                                <ComboBoxItem Content="{DynamicResource GrowthSelection}" Tag="SeedSelection" />
+                                                <ComboBoxItem Content="{DynamicResource GrowthLevel}" Tag="Level" />
+                                            </ComboBox>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                                            <TextBlock Text="{DynamicResource GrowthFormula}" FontWeight="SemiBold" />
+                                            <ComboBox x:Name="GrowthFormulaCombo" SelectedIndex="0" Margin="0,6,0,12">
+                                                <ComboBoxItem Content="{DynamicResource FormulaAdd}" Tag="Add" />
+                                                <ComboBoxItem Content="{DynamicResource FormulaPercent}" Tag="Percent" />
+                                                <ComboBoxItem Content="{DynamicResource FormulaMultiply}" Tag="Multiply" />
+                                            </ComboBox>
+                                        </StackPanel>
+                                    </Grid>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition /><ColumnDefinition /></Grid.ColumnDefinitions>
+                                        <StackPanel Margin="0,0,10,0"><TextBlock Text="{DynamicResource GrowthStep}" /><TextBox x:Name="GrowthStepBox" Text="1" Margin="0,5" /></StackPanel>
+                                        <StackPanel Grid.Column="1" Margin="5,0"><TextBlock Text="{DynamicResource GrowthStarts}" /><TextBox x:Name="GrowthStartBox" Text="1" Margin="0,5" /></StackPanel>
+                                        <StackPanel Grid.Column="2" Margin="10,0,0,0"><TextBlock Text="{DynamicResource GrowthCap}" /><TextBox x:Name="GrowthCapBox" Text="100" Margin="0,5" /></StackPanel>
+                                    </Grid>
+                                    <CheckBox x:Name="ResetAtLevelCheck" Content="{DynamicResource ResetAtLevel}" IsChecked="True" />
+                                </StackPanel>
+                            </Expander>
+                        </Border>
+                        <Border Style="{StaticResource Card}" Background="#E4EED7">
+                            <TextBlock Text="{DynamicResource ChallengeRuntimeNote}" />
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- Page 2: Modes -->
+                <ScrollViewer x:Name="PageModes" Visibility="Collapsed" VerticalScrollBarVisibility="Auto" Padding="30,24,30,30">
+                    <StackPanel MaxWidth="1040">
+                        <TextBlock Text="{DynamicResource ModesTitle}" Style="{StaticResource PageTitle}" />
+                        <TextBlock Text="{DynamicResource ModesSubtitle}" Style="{StaticResource PageSubtitle}" />
+                        <Border Style="{StaticResource Card}" Background="#F7EDC9">
+                            <StackPanel>
+                                <Button x:Name="LimboButton" Content="{DynamicResource UnlockLimbo}" Style="{StaticResource PrimaryButton}" HorizontalAlignment="Left" Click="Limbo_Click" />
+                                <TextBlock Text="{DynamicResource LimboHow}" Margin="0,12,0,0" Foreground="#655A4F" />
+                            </StackPanel>
+                        </Border>
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition /></Grid.ColumnDefinitions>
+                            <Border Style="{StaticResource Card}" Margin="0,0,16,16" Background="#E2EDCF">
+                                <StackPanel>
+                                    <TextBlock Text="{DynamicResource StableModes}" Style="{StaticResource SectionTitle}" />
+                                    <TextBlock Text="{DynamicResource StableModesList}" FontWeight="SemiBold" />
+                                    <TextBlock Text="{DynamicResource OfficialPool}" Margin="0,12,0,0" />
+                                    <TextBlock Text="{DynamicResource PuzzleInfo}" Margin="0,8,0,0" Foreground="#596650" />
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="1" Style="{StaticResource Card}" Background="#F6DEC8">
+                                <StackPanel>
+                                    <TextBlock Text="{DynamicResource ExperimentalModes}" Style="{StaticResource SectionTitle}" />
+                                    <TextBlock Text="{DynamicResource NightRoof}" FontWeight="Bold" />
+                                    <TextBlock Text="{DynamicResource NightRoofDescription}" Margin="0,6,0,0" />
+                                    <Button x:Name="NightRoofButton" Content="{DynamicResource ApplyNightRoof}" Style="{StaticResource SecondaryButton}" Margin="0,14,0,0" Click="NightRoof_Click" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                        <Border Style="{StaticResource Card}" Background="#F2D8CF" BorderBrush="#C88472">
+                            <StackPanel>
+                                <TextBlock Text="{DynamicResource InternalModes}" Style="{StaticResource SectionTitle}" />
+                                <TextBlock Text="{DynamicResource InternalModesDescription}" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- Page 3: Lab -->
+                <ScrollViewer x:Name="PageLab" Visibility="Collapsed" VerticalScrollBarVisibility="Auto" Padding="30,24,30,30">
+                    <StackPanel MaxWidth="1040">
+                        <TextBlock Text="{DynamicResource LabTitle}" Style="{StaticResource PageTitle}" />
+                        <TextBlock Text="{DynamicResource LabSubtitle}" Style="{StaticResource PageSubtitle}" />
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="1.2*" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                            <Border Style="{StaticResource Card}" Margin="0,0,16,16">
+                                <StackPanel>
+                                    <TextBlock Text="{DynamicResource ZombieSpawner}" Style="{StaticResource SectionTitle}" />
+                                    <TextBlock Text="{DynamicResource ZombieType}" FontWeight="SemiBold" />
+                                    <ComboBox x:Name="ZombieCombo" Margin="0,6,0,14" />
+                                    <Grid>
+                                        <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition /></Grid.ColumnDefinitions>
+                                        <StackPanel Margin="0,0,8,0"><TextBlock Text="{DynamicResource Row}" /><ComboBox x:Name="ZombieRowCombo" Margin="0,6,0,14" /></StackPanel>
+                                        <StackPanel Grid.Column="1" Margin="8,0,0,0"><TextBlock Text="{DynamicResource Column}" /><ComboBox x:Name="ZombieColumnCombo" Margin="0,6,0,14" /></StackPanel>
+                                    </Grid>
+                                    <Button Content="{DynamicResource SpawnZombie}" Style="{StaticResource PrimaryButton}" Click="SpawnZombie_Click" />
+                                    <Border Background="#F5D7CB" CornerRadius="10" Padding="10" Margin="0,12,0,0">
+                                        <TextBlock Text="{DynamicResource BossWarning}" FontSize="12" Foreground="#753B31" />
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="1" Style="{StaticResource Card}" Background="#F7EDC9">
+                                <StackPanel>
+                                    <TextBlock Text="{DynamicResource LadderTool}" Style="{StaticResource SectionTitle}" />
+                                    <TextBlock Text="{DynamicResource LadderDescription}" Margin="0,0,0,14" />
+                                    <Grid>
+                                        <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition /></Grid.ColumnDefinitions>
+                                        <StackPanel Margin="0,0,8,0"><TextBlock Text="{DynamicResource Row}" /><ComboBox x:Name="LadderRowCombo" Margin="0,6,0,14" /></StackPanel>
+                                        <StackPanel Grid.Column="1" Margin="8,0,0,0"><TextBlock Text="{DynamicResource Column}" /><ComboBox x:Name="LadderColumnCombo" Margin="0,6,0,14" /></StackPanel>
+                                    </Grid>
+                                    <Button Content="{DynamicResource PlaceLadder}" Style="{StaticResource PrimaryButton}" Click="PlaceLadder_Click" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                        <Border Style="{StaticResource Card}" Background="#E5E0D2">
+                            <Grid>
+                                <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="{DynamicResource ClearLabObjects}" FontWeight="Bold" FontSize="16" />
+                                    <TextBlock Text="{DynamicResource ClearLabHint}" Style="{StaticResource Caption}" Margin="0,5,18,0" />
+                                </StackPanel>
+                                <Button Grid.Column="1" Content="{DynamicResource ClearLabObjects}" Style="{StaticResource DangerButton}" Click="ClearLab_Click" />
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- Page 4: Cheats -->
+                <ScrollViewer x:Name="PageCheats" Visibility="Collapsed" VerticalScrollBarVisibility="Auto" Padding="30,24,30,30">
+                    <StackPanel MaxWidth="1040">
+                        <TextBlock Text="{DynamicResource CheatsTitle}" Style="{StaticResource PageTitle}" />
+                        <TextBlock Text="{DynamicResource CheatsSubtitle}" Style="{StaticResource PageSubtitle}" />
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition /></Grid.ColumnDefinitions>
+                            <Border Style="{StaticResource Card}" Margin="0,0,16,16">
+                                <StackPanel>
+                                    <TextBlock Text="{DynamicResource SunAmount}" Style="{StaticResource SectionTitle}" />
+                                    <Grid>
+                                        <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                                        <TextBox x:Name="SunBox" Text="9990" Margin="0,0,10,0" />
+                                        <Button Grid.Column="1" Content="{DynamicResource SetSun}" Style="{StaticResource PrimaryButton}" Click="SetSun_Click" />
+                                    </Grid>
+                                    <CheckBox x:Name="SunLimitCheck" Content="{DynamicResource UnlockSunLimit}" Checked="Cheat_Changed" Unchecked="Cheat_Changed" />
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="1" Style="{StaticResource Card}" Background="#F7EDC9">
+                                <StackPanel>
+                                    <TextBlock Text="{DynamicResource CheatsTitle}" Style="{StaticResource SectionTitle}" />
+                                    <CheckBox x:Name="NoCooldownCheck" Content="{DynamicResource NoCooldown}" Checked="Cheat_Changed" Unchecked="Cheat_Changed" />
+                                    <CheckBox x:Name="FreePlantingCheck" Content="{DynamicResource FreePlanting}" Checked="Cheat_Changed" Unchecked="Cheat_Changed" />
+                                    <CheckBox x:Name="PlantInvincibleCheck" Content="{DynamicResource PlantInvincible}" Checked="Cheat_Changed" Unchecked="Cheat_Changed" />
+                                    <CheckBox x:Name="MushroomsAwakeCheck" Content="{DynamicResource MushroomsAwake}" Checked="Cheat_Changed" Unchecked="Cheat_Changed" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                        <Border Style="{StaticResource Card}" Background="#F6DEC8">
+                            <TextBlock Text="{DynamicResource CheatWarning}" />
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- Page 5: Vault -->
+                <ScrollViewer x:Name="PageVault" Visibility="Collapsed" VerticalScrollBarVisibility="Auto" Padding="30,24,30,30">
+                    <StackPanel MaxWidth="1040">
+                        <TextBlock Text="{DynamicResource VaultTitle}" Style="{StaticResource PageTitle}" />
+                        <TextBlock Text="{DynamicResource VaultSubtitle}" Style="{StaticResource PageSubtitle}" />
+                        <Border Style="{StaticResource Card}" Background="#E2EDCF">
+                            <StackPanel>
+                                <TextBlock Text="{DynamicResource SaveLocation}" FontWeight="SemiBold" />
+                                <TextBlock x:Name="SaveLocationText" Margin="0,6,0,14" Foreground="#4E5F46" />
+                                <WrapPanel>
+                                    <Button Content="{DynamicResource BackupNow}" Style="{StaticResource PrimaryButton}" Margin="0,0,10,0" Click="Backup_Click" />
+                                    <Button Content="{DynamicResource OpenVault}" Style="{StaticResource SecondaryButton}" Margin="0,0,10,0" Click="OpenVault_Click" />
+                                    <Button Content="{DynamicResource RefreshBackups}" Style="{StaticResource SecondaryButton}" Click="RefreshBackups_Click" />
+                                </WrapPanel>
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{StaticResource Card}">
+                            <Grid>
+                                <Grid.RowDefinitions><RowDefinition Height="280" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                                <ListBox x:Name="BackupsList" Background="#FFFDF6" BorderBrush="#C9B78E" BorderThickness="1" Padding="6" />
+                                <Grid Grid.Row="1" Margin="0,14,0,0">
+                                    <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                                    <TextBlock Text="{DynamicResource RestoreWarning}" Style="{StaticResource Caption}" Margin="0,0,20,0" />
+                                    <Button Grid.Column="1" Content="{DynamicResource RestoreBackup}" Style="{StaticResource DangerButton}" Click="RestoreBackup_Click" />
+                                </Grid>
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- Page 6: Settings -->
+                <ScrollViewer x:Name="PageSettings" Visibility="Collapsed" VerticalScrollBarVisibility="Auto" Padding="30,24,30,30">
+                    <StackPanel MaxWidth="1040">
+                        <TextBlock Text="{DynamicResource SettingsTitle}" Style="{StaticResource PageTitle}" />
+                        <TextBlock Text="{DynamicResource SettingsSubtitle}" Style="{StaticResource PageSubtitle}" />
+                        <Border Style="{StaticResource Card}">
+                            <Grid>
+                                <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="260" /></Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="{DynamicResource Language}" Style="{StaticResource SectionTitle}" />
+                                    <TextBlock Text="{DynamicResource AppTagline}" Foreground="#6A5E51" />
+                                </StackPanel>
+                                <ComboBox x:Name="LanguageCombo" Grid.Column="1" SelectionChanged="Language_Changed">
+                                    <ComboBoxItem Content="{DynamicResource Chinese}" Tag="zh-CN" />
+                                    <ComboBoxItem Content="{DynamicResource English}" Tag="en-US" />
+                                </ComboBox>
+                            </Grid>
+                        </Border>
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition /></Grid.ColumnDefinitions>
+                            <Border Style="{StaticResource Card}" Margin="0,0,16,16">
+                                <StackPanel><TextBlock Text="{DynamicResource Compatibility}" Style="{StaticResource SectionTitle}" /><TextBlock Text="{DynamicResource CompatibilityText}" /></StackPanel>
+                            </Border>
+                            <Border Grid.Column="1" Style="{StaticResource Card}" Background="#F7EDC9">
+                                <StackPanel><TextBlock Text="{DynamicResource Implementation}" Style="{StaticResource SectionTitle}" /><TextBlock Text="{DynamicResource ImplementationText}" /></StackPanel>
+                            </Border>
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition /></Grid.ColumnDefinitions>
+                            <Border Style="{StaticResource Card}" Margin="0,0,16,16" Background="#E2EDCF">
+                                <StackPanel><TextBlock Text="{DynamicResource References}" Style="{StaticResource SectionTitle}" /><TextBlock Text="{DynamicResource ReferencesText}" /></StackPanel>
+                            </Border>
+                            <Border Grid.Column="1" Style="{StaticResource Card}" Background="#E7E0F0">
+                                <StackPanel><TextBlock Text="{DynamicResource Artwork}" Style="{StaticResource SectionTitle}" /><TextBlock Text="{DynamicResource ArtworkText}" /></StackPanel>
+                            </Border>
+                        </Grid>
+                        <WrapPanel>
+                            <Button Content="{DynamicResource OpenRepository}" Style="{StaticResource SecondaryButton}" Margin="0,0,10,0" Click="OpenRepository_Click" />
+                            <Button Content="{DynamicResource OpenReferences}" Style="{StaticResource SecondaryButton}" Click="OpenReferences_Click" />
+                        </WrapPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+
+        <Border Grid.Row="2" Background="{StaticResource WoodDark}">
+            <Grid Margin="14,0">
+                <TextBlock Text="{DynamicResource LicenseText}" Foreground="#D9CDBA" FontSize="11" />
+                <TextBlock x:Name="ToastText" HorizontalAlignment="Right" Foreground="#FFF3C5" FontSize="11" />
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
