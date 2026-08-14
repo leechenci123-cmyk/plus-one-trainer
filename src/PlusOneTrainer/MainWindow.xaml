@@ -53,7 +53,7 @@
                                 CornerRadius="10" Padding="12,5" Margin="0,0,0,4" Effect="{StaticResource SmallShadow}">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="{DynamicResource AppName}" FontWeight="Bold" FontSize="17" />
-                                <TextBlock Text="  1.0 Beta 3" FontWeight="Bold" Foreground="{StaticResource LeafDark}" />
+                                <TextBlock Text="  1.0 Beta 4" FontWeight="Bold" Foreground="{StaticResource LeafDark}" />
                             </StackPanel>
                         </Border>
                     </Grid>
@@ -309,7 +309,7 @@
                         <TextBlock Text="{DynamicResource LabTitle}" Style="{StaticResource PageTitle}" />
                         <TextBlock Text="{DynamicResource LabSubtitle}" Style="{StaticResource PageSubtitle}" />
                         <Border Style="{StaticResource Card}" Background="#FFF1C8" BorderBrush="#C99942">
-                            <TextBlock Text="{DynamicResource RemoteCallsBeta3Note}" TextWrapping="Wrap" />
+                            <TextBlock Text="{DynamicResource RemoteCallsBeta4Note}" TextWrapping="Wrap" />
                         </Border>
                         <Grid>
                             <Grid.ColumnDefinitions><ColumnDefinition Width="1.2*" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
@@ -371,6 +371,10 @@
                                         <Button Grid.Column="1" Content="{DynamicResource SetSun}" Style="{StaticResource PrimaryButton}" Click="SetSun_Click" />
                                     </Grid>
                                     <CheckBox x:Name="SunLimitCheck" Content="{DynamicResource UnlockSunLimit}" Checked="Cheat_Changed" Unchecked="Cheat_Changed" />
+                                    <Separator Margin="0,14,0,12" />
+                                    <TextBlock Text="{DynamicResource WalletMoney}" Style="{StaticResource SectionTitle}" />
+                                    <Button Content="{DynamicResource AddMoney1000}" Style="{StaticResource PrimaryButton}" Click="AddMoney_Click" />
+                                    <TextBlock Text="{DynamicResource MoneyHint}" Style="{StaticResource Caption}" Margin="0,8,0,0" TextWrapping="Wrap" />
                                 </StackPanel>
                             </Border>
                             <Border Grid.Column="1" Style="{StaticResource Card}" Background="#F7EDC9">

@@ -3,7 +3,7 @@
                     xmlns:sys="clr-namespace:System;assembly=System.Runtime">
     <sys:String x:Key="AppName">Plus One Trainer</sys:String>
     <sys:String x:Key="AppTagline">One less hassle, one more convenience</sys:String>
-    <sys:String x:Key="VersionLabel">1.0 Beta 3</sys:String>
+    <sys:String x:Key="VersionLabel">1.0 Beta 4</sys:String>
     <sys:String x:Key="NavConvenience">⌂  Convenience</sys:String>
     <sys:String x:Key="NavChallenge">⚑  Challenge</sys:String>
     <sys:String x:Key="NavModes">▦  Hidden modes</sys:String>
@@ -36,7 +36,7 @@
     <sys:String x:Key="SpeedDescription">Changes frame duration only; 1.0× is the original speed.</sys:String>
     <sys:String x:Key="ApplySpeed">Apply speed</sys:String>
     <sys:String x:Key="ResetSpeed">Original speed</sys:String>
-    <sys:String x:Key="AutoCollect">Auto-collect sun, coins, diamonds, chocolate, and gifts</sys:String>
+    <sys:String x:Key="AutoCollect">Auto-collect sun, coins, diamonds, chocolate, and gifts (credited on arrival)</sys:String>
     <sys:String x:Key="PauseOnFocusLoss">Use Advanced Pause on focus loss (pending verification)</sys:String>
     <sys:String x:Key="ConvenienceTitle">Convenience switches</sys:String>
     <sys:String x:Key="HealthBarsTitle">Lawn health bars</sys:String>
@@ -97,7 +97,7 @@
 
     <sys:String x:Key="LabTitle">Test workshop</sys:String>
     <sys:String x:Key="LabSubtitle">Place test objects in an I, Zombie-like workflow with battle, row-count, and special-zombie checks.</sys:String>
-    <sys:String x:Key="RemoteCallsBeta3Note">Beta 3 verifies the official Steam parent and connects to its real popcapgame1 game child. Zombie, ladder, and Night Roof operations still depend on unverified internal calls and remain disabled; health bars, speed, auto collect, and ordinary cheats are ready for testing.</sys:String>
+    <sys:String x:Key="RemoteCallsBeta4Note">Beta 4 verifies the official Steam parent and connects to its real popcapgame1 game child. Zombie, ladder, and Night Roof operations still depend on unverified internal calls and remain disabled; health bars, speed, auto collect, and ordinary cheats are ready for testing.</sys:String>
     <sys:String x:Key="ZombieSpawner">Place a zombie</sys:String>
     <sys:String x:Key="ZombieType">Zombie type</sys:String>
     <sys:String x:Key="Row">Row</sys:String>
@@ -117,6 +117,10 @@
     <sys:String x:Key="CheatsSubtitle">These are not everyday conveniences, so they live one level deeper. Every patch can be restored independently.</sys:String>
     <sys:String x:Key="SunAmount">Sun amount</sys:String>
     <sys:String x:Key="SetSun">Set sun</sys:String>
+    <sys:String x:Key="WalletMoney">Wallet money</sys:String>
+    <sys:String x:Key="AddMoney1000">Add 1,000</sys:String>
+    <sys:String x:Key="MoneyHint">The first click creates a save backup, then each click adds 1,000. Auto-collected coins are credited after reaching the wallet at the lower left.</sys:String>
+    <sys:String x:Key="MoneyBalance">Current money: {0}</sys:String>
     <sys:String x:Key="NoCooldown">No seed packet cooldown</sys:String>
     <sys:String x:Key="FreePlanting">Planting costs no sun</sys:String>
     <sys:String x:Key="PlantInvincible">Invincible plants (all covered damage sources)</sys:String>
@@ -144,7 +148,7 @@
     <sys:String x:Key="Chinese">简体中文</sys:String>
     <sys:String x:Key="English">English</sys:String>
     <sys:String x:Key="Compatibility">Compatibility</sys:String>
-    <sys:String x:Key="CompatibilityText">Beta 3 verifies the Steam wrapper parent's SHA-256, then connects to its popcapgame1 child. The child must be x86, timestamp 0x4D02B058, and pass live object checks.</sys:String>
+    <sys:String x:Key="CompatibilityText">Beta 4 verifies the Steam wrapper parent's SHA-256, then connects to its popcapgame1 child. The child must be x86, timestamp 0x4D02B058, and pass live object checks.</sys:String>
     <sys:String x:Key="Implementation">Implementation</sys:String>
     <sys:String x:Key="ImplementationText">External x86 utility using Win32 process-memory APIs and short remote code thunks to call the game’s own object-creation functions. No DLL injection, EXE edits, or Steam/DRM bypass.</sys:String>
     <sys:String x:Key="References">References &amp; acknowledgements</sys:String>
@@ -167,9 +171,9 @@
     <sys:String x:Key="ErrorPatchOwnership">Patch bytes changed externally; Plus One Trainer refused to overwrite them.</sys:String>
     <sys:String x:Key="ErrorRemoteBusy">A previous internal game call is still running; the new call was blocked.</sys:String>
     <sys:String x:Key="ErrorRemoteTimeout">An internal game call timed out; the safety guard stays owned until it exits.</sys:String>
-    <sys:String x:Key="ErrorRemoteCallsUnavailable">Beta 3 has not verified internal game-function calls; the test workshop and Night Roof remain disabled.</sys:String>
+    <sys:String x:Key="ErrorRemoteCallsUnavailable">Beta 4 has not verified internal game-function calls; the test workshop and Night Roof remain disabled.</sys:String>
     <sys:String x:Key="ErrorAdventureRequired">Complete Adventure once before revealing the Limbo Page.</sys:String>
-    <sys:String x:Key="ErrorBobsledUnavailable">Bobsled Team creates four zombies at once. Beta 3 disables all internal spawn calls; a later build must also track and clear exactly those four before enabling it.</sys:String>
+    <sys:String x:Key="ErrorBobsledUnavailable">Bobsled Team creates four zombies at once. Beta 4 disables all internal spawn calls; a later build must also track and clear exactly those four before enabling it.</sys:String>
     <sys:String x:Key="ErrorInvalidNumericSettings">Invalid numeric settings. Check the multipliers, start index, and maximum.</sys:String>
     <sys:String x:Key="RemoteCleanupWaiting">Waiting for the internal game call to finish and restoring its guard. Do not force-close the trainer.</sys:String>
 </ResourceDictionary>

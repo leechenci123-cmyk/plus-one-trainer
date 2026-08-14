@@ -23,6 +23,7 @@ public sealed class GameVersionProfile
     public uint FreePlanting { get; init; } = 0x934;
     public uint UserData { get; init; } = 0x94C;
     public uint PlayerAdventurePlaythrough { get; init; } = 0x58;
+    public uint Money { get; init; } = 0x54;
 
     public uint ZombieArray { get; init; } = 0xA8;
     public uint ZombieCountMax { get; init; } = 0xAC;

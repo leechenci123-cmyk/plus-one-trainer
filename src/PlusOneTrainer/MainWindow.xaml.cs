@@ -26,6 +26,7 @@ public partial class MainWindow : Window
     private bool _suppressUi;
     private bool _limboEnabled;
     private bool _nightRoofEnabled;
+    private bool _moneyBackupCreated;
     private bool _closingAfterRemoteCleanup;
     private DateTime _nextAutoAttach = DateTime.MinValue;
     private HwndSource? _windowSource;
@@ -196,6 +197,7 @@ public partial class MainWindow : Window
                 _healthOverlay = null;
                 _engine?.Dispose();
                 _engine = new TrainerEngine(result.Session, _saveVault);
+                _moneyBackupCreated = false;
                 EnsureHealthOverlay();
                 SetAttachmentState(AttachmentState.Attached, result.Details);
                 UpdateAdvancedPauseCapability();
@@ -434,6 +436,18 @@ public partial class MainWindow : Window
     {
         if (int.TryParse(SunBox.Text, out var sun))
             RunWithGame(engine => engine.SetSun(sun));
+    }
+
+    private void AddMoney_Click(object sender, RoutedEventArgs e)
+    {
+        if (!_moneyBackupCreated && !CreateBackup("before-money"))
+            return;
+        var balance = 0;
+        if (RunWithGame(engine => balance = engine.AddMoney(1000)))
+        {
+            _moneyBackupCreated = true;
+            ShowToast(string.Format(LocalizationService.Text("MoneyBalance"), balance));
+        }
     }
 
     private void Cheat_Changed(object sender, RoutedEventArgs e)

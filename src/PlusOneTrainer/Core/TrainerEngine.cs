@@ -132,6 +132,29 @@ public sealed class TrainerEngine : IDisposable
         Session.Memory.WriteInt32(address, Math.Clamp(sun, 0, 999_999));
     }
 
+    public int AddMoney(int displayedAmount)
+    {
+        var lawn = RequireLawn();
+        var userData = Session.Memory.ReadUInt32(lawn + Session.Profile.UserData);
+        if (userData == 0)
+            throw new TrainerException("ErrorRuntimeSignature", "Player profile data is not available.");
+
+        var address = userData + Session.Profile.Money;
+        var currentRaw = Session.Memory.ReadInt32(address);
+        var nextRaw = CalculateMoneyRaw(currentRaw, displayedAmount);
+        Session.Memory.WriteInt32(address, nextRaw);
+        return nextRaw * 10;
+    }
+
+    internal static int CalculateMoneyRaw(int currentRaw, int displayedAmount)
+    {
+        if (currentRaw is < 0 or > 99_999)
+            throw new TrainerException("ErrorRuntimeSignature", "Wallet value failed its runtime range check.");
+        if (displayedAmount <= 0 || displayedAmount % 10 != 0)
+            throw new ArgumentOutOfRangeException(nameof(displayedAmount));
+        return Math.Min(99_999, checked(currentRaw + displayedAmount / 10));
+    }
+
     public IReadOnlyList<uint> SpawnZombie(int row, int column, int type)
     {
         RequireRemoteCalls();
@@ -413,7 +436,7 @@ public sealed class TrainerEngine : IDisposable
     {
         if (!SupportsRemoteCalls)
             throw new TrainerException("ErrorRemoteCallsUnavailable",
-                "Internal game calls remain disabled in Beta 3.");
+                "Internal game calls remain disabled in Beta 4.");
     }
 
     public void Dispose()

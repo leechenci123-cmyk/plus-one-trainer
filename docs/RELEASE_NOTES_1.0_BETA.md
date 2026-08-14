@@ -1,10 +1,20 @@
 # +1 修改器 1.0 Beta / Plus One Trainer 1.0 Beta
 
-技术版本 / Technical version: `1.0.0-beta.3`
+技术版本 / Technical version: `1.0.0-beta.4`
 
-这是第三个公开测试版本，只支持 Steam GOTY 英文版 `1.2.0.1096`（x86）的精确白名单文件。请先使用“存档保险箱”备份整个存档目录。
+这是第四个公开测试版本，只支持 Steam GOTY 英文版 `1.2.0.1096`（x86）的精确白名单文件。请先使用“存档保险箱”备份整个存档目录。
 
-This is the third public beta and supports only the exact allow-listed English Steam GOTY `1.2.0.1096` x86 executable. Back up the complete save directory with Save Vault before testing.
+This is the fourth public beta and supports only the exact allow-listed English Steam GOTY `1.2.0.1096` x86 executable. Back up the complete save directory with Save Vault before testing.
+
+## Beta 4 钱包功能 / Beta 4 wallet feature
+
+- 作弊页新增“金钱 +1000”；首次点击自动备份存档，随后读取当前档案钱包、验证范围后增加 1000，最高不超过游戏原生范围。
+- 明确自动收集使用游戏原生飞行与计分流程：金币到达左下钱包并调用计分后才增加余额。
+- 金钱字段只影响当前档案钱包，不修改冒险、小游戏或隐藏模式解锁进度。
+
+- Adds a “Money +1,000” action that creates a save backup on first use, then validates and increments the active profile wallet within the native range.
+- Clarifies that auto collect retains the native flight and scoring path: a coin is credited after reaching the wallet and being scored.
+- The money field affects only the active profile wallet; it does not edit Adventure, mini-game, or hidden-mode unlock progress.
 
 ## Beta 3 连接修复 / Beta 3 attachment fix
 

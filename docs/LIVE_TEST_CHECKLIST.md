@@ -1,8 +1,8 @@
 # 1.0 实机测试清单 / Live-test checklist
 
-当前状态：**1.0 Beta 3**（`1.0.0-beta.3`）。本文件只列待测项目；编写和离线测试期间不得自动启动游戏。只有用户明确说当前可以占用 Steam 家庭库时，才执行这些测试。
+当前状态：**1.0 Beta 4**（`1.0.0-beta.4`）。本文件只列待测项目；编写和离线测试期间不得自动启动游戏。只有用户明确说当前可以占用 Steam 家庭库时，才执行这些测试。
 
-Current status: **1.0 Beta 3** (`1.0.0-beta.3`). This file records pending live tests. Development and offline tests must never start the game automatically. Run these only after the user explicitly confirms that the shared Steam library is available.
+Current status: **1.0 Beta 4** (`1.0.0-beta.4`). This file records pending live tests. Development and offline tests must never start the game automatically. Run these only after the user explicitly confirms that the shared Steam library is available.
 
 ## 0. 前置保护 / Preconditions
 
@@ -23,6 +23,7 @@ Current status: **1.0 Beta 3** (`1.0.0-beta.3`). This file records pending live 
 
 - [ ] 速度 `0.25/0.5/0.75/1/1.5/2/3/5/10×` 与 F4 往返，退出恢复原帧时长。
 - [ ] 自动收集分别覆盖阳光、银币、金币、钻石、巧克力、礼物；不误点关卡对象。
+- [ ] “金钱 +1000”首次使用创建 `before-money` 备份；连续点击按显示金额递增 1000，接近上限时安全封顶，正常退出游戏后钱包保存。
 - [ ] 与另一修改器已启用同一补丁时，本工具提示占用且退出不覆盖对方状态。
 - [ ] 总开关、僵尸/植物分开开关；每个对象只有对应血条，关闭后覆盖窗口立即隐藏且不挡鼠标。
 - [ ] 僵尸行走、跳跃、潜水、飞行、矿工转向、巨人与僵王时血条持续跟随；植物叠层血条不重叠。
@@ -62,4 +63,4 @@ Current status: **1.0 Beta 3** (`1.0.0-beta.3`). This file records pending live 
 - [ ] 中文/英文 UI 全页截图，无截断、乱码、重叠；100%/125%/150% DPI。
 - [ ] Windows 10、Windows 11；普通权限；无 .NET 预装机器运行 self-contained 包。
 - [ ] Release ZIP 内容、EXE x86/FileVersion、ZIP 与 EXE SHA-256、.NET 许可证文件、源码 tag 一致。
-- [ ] 全部关键项通过后才把 `1.0.0-beta.3` 提升为 `1.0.0`。
+- [ ] 全部关键项通过后才把 `1.0.0-beta.4` 提升为 `1.0.0`。

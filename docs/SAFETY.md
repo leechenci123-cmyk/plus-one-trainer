@@ -22,12 +22,12 @@ This matters because the Steam file on disk is DRM-wrapped and has a different d
 - Advanced Pause has no verified Steam 1096 runtime signature in this release candidate. Its button, hotkey, and focus-loss automation are disabled; no guessed `mStepMode` offset or AvZ 1051 address is used.
 - Health bars use bulk `ReadProcessMemory` snapshots only. The transparent overlay is click-through, defaults off, and hides outside a foreground battle; it never writes health values.
 - Challenge-rule background writes are disabled in this candidate until their per-object identity transaction passes a live Steam 1096 test.
-- Beta 3 keeps all internal-function calls disabled, including the test workshop and Night Roof. Recognizing the verified game child never enables those calls by itself.
+- Beta 4 keeps all internal-function calls disabled, including the test workshop and Night Roof. Recognizing the verified game child never enables those calls by itself.
 - If a remote call exceeds its timeout, the code/data pages and guard are retained, new calls are blocked, and application shutdown waits for the game thread to finish before cleanup.
 
 ## Save data
 
-- Version 1.0 never edits profile fields.
+- The optional “Money +1,000” cheat writes only the active profile wallet field after creating a first-use backup; it does not edit progress or unlock fields. A normal game save can persist the new wallet value.
 - Backups copy the complete detected `userdata` directory.
 - Each backup contains a JSON manifest with a SHA-256 hash for every file.
 - Restore is blocked while the game is running and creates a new `before-restore` snapshot first.

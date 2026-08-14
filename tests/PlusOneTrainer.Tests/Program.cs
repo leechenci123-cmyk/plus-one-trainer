@@ -26,7 +26,8 @@ var tests = new (string Name, Action Run)[]
     ("Profile patch invariants", ProfilePatchInvariants),
     ("Health bar durability math", HealthBarDurabilityMath),
     ("Main window resource references", MainWindowResourceReferences),
-    ("Steam runtime timestamp gate", SteamRuntimeTimestampGate)
+    ("Steam runtime timestamp gate", SteamRuntimeTimestampGate),
+    ("Wallet money math", WalletMoneyMath)
 };
 
 var failed = 0;
@@ -51,6 +52,7 @@ static void ProfileConstants()
     var profile = new GameVersionProfile();
     Equal(0x00731C50u, profile.LawnPointer);
     Equal(0x868u, profile.Board);
+    Equal(0x54u, profile.Money);
     Equal(0x138u, profile.GridItemCountMax);
     Equal(0x0042DCE0u, profile.CallPutZombie);
     Equal(0x00411290u, profile.CallPutZombieInRow);
@@ -265,6 +267,14 @@ static void SteamRuntimeTimestampGate()
     Equal(false, GameSession.IsSupportedRuntimeStamp(0x48ECEE74));
     Equal(false, GameSession.IsSupportedRuntimeStamp(0));
     Equal(false, GameSession.IsSupportedRuntimeStamp(0x49ECF563));
+}
+
+static void WalletMoneyMath()
+{
+    Equal(1_120, TrainerEngine.CalculateMoneyRaw(1_020, 1_000));
+    Equal(99_999, TrainerEngine.CalculateMoneyRaw(99_950, 1_000));
+    Throws<TrainerException>(() => TrainerEngine.CalculateMoneyRaw(-1, 1_000));
+    Throws<ArgumentOutOfRangeException>(() => TrainerEngine.CalculateMoneyRaw(1_020, 1));
 }
 
 static IEnumerable<string> ExtractResourceKeys(string value)

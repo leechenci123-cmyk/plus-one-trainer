@@ -10,9 +10,9 @@ A convenience-first external utility for the classic single-player PC release of
 - Game speed from `0.25×` to `10×` and auto-collection are implemented; every speed tier and pickup type remains on the live-test checklist.
 - Toggleable read-only health bars for all plants and zombies, with zombie bars continuously following position. Coordinates and DPI scaling remain on the live-test checklist.
 - Reveals the original Limbo Page for hidden Day/Night/Fog/Roof Endless modes and Limbo mini-games. Pool Endless remains on the normal Survival page.
-- Night Roof is honestly labeled a scene-mixing experiment—not an alleged hidden original mode—and its entry point remains disabled in Beta 3.
+- Night Roof is honestly labeled a scene-mixing experiment—not an alleged hidden original mode—and its entry point remains disabled in Beta 4.
 - The spawn-count, wave-speed, full durability, and advanced-growth UI and calculations are complete. The candidate disables Apply until its background object transaction passes live verification.
-- A test workshop catalogs zombie IDs `0–32`, including Yeti and both Gargantuars. All spawn and ladder buttons remain disabled in Beta 3 pending live verification of internal calls.
+- A test workshop catalogs zombie IDs `0–32`, including Yeti and both Gargantuars. All spawn and ladder buttons remain disabled in Beta 4 pending live verification of internal calls.
 - A save vault performs whole-directory snapshots, per-file SHA-256 verification, and automatic pre-restore backups without editing profile fields.
 - Simplified Chinese and English interface and READMEs, with bilingual summaries or English details in technical documents.
 
@@ -27,16 +27,16 @@ SHA-256  868F8E2BAB0D6A7EF8AFC4C5960C608ECCEF82BD086BD6E0C0E2670199A5CA45
 Steam child runtime PE timestamp  0x4D02B058
 ```
 
-Unknown versions stay read-only. Beta 3 first verifies the Steam wrapper parent's complete disk hash, then connects only to the `popcapgame1.exe` child launched by that parent. The child must also pass x86, timestamp, image-base, and live-object checks.
+Unknown versions stay read-only. Beta 4 first verifies the Steam wrapper parent's complete disk hash, then connects only to the `popcapgame1.exe` child launched by that parent. The child must also pass x86, timestamp, image-base, and live-object checks.
 
 ## Use
 
-1. Download and extract `Plus-One-Trainer-1.0.0-beta.3-win-x86.zip` from GitHub Releases.
+1. Download and extract `Plus-One-Trainer-1.0.0-beta.4-win-x86.zip` from GitHub Releases.
 2. Start your legally obtained Steam copy, then run `PlusOneTrainer.exe`.
 3. Wait for the green Attached status. Create a Save Vault snapshot before trying experimental features.
 4. A normal trainer exit restores code patches still owned by this tool. If an internal call times out, the window waits for safe cleanup before exiting.
 
-This is **1.0 Beta 3** (technical version `1.0.0-beta.3`). It fixes attachment to the Steam wrapper parent instead of the real game child. It must not be promoted to stable `1.0.0` until the [live-test checklist](docs/LIVE_TEST_CHECKLIST.md) passes. Test workshop, Night Roof, Advanced Pause, and challenge-rule writes intentionally remain disabled.
+This is **1.0 Beta 4** (technical version `1.0.0-beta.4`). It adds a wallet-money `+1,000` action and explains that auto-collected coins are credited after reaching the wallet. It must not be promoted to stable `1.0.0` until the [live-test checklist](docs/LIVE_TEST_CHECKLIST.md) passes. Test workshop, Night Roof, Advanced Pause, and challenge-rule writes intentionally remain disabled.
 
 Administrator rights are not normally required. Security software may flag any external trainer for opening and writing another process; compare the release hash and inspect this source instead of adding broad antivirus exclusions.
 
@@ -57,7 +57,7 @@ Windows 10/11 and the .NET 8 SDK are required:
 ```powershell
 ./scripts/build.ps1 -Configuration Release
 ./scripts/test.ps1
-./scripts/package.ps1 -Version 1.0.0-beta.3
+./scripts/package.ps1 -Version 1.0.0-beta.4
 ```
 
 The release is a self-contained single-file `win-x86` application.
