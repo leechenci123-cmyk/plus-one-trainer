@@ -35,7 +35,7 @@ jobs:
           gh release create $env:GITHUB_REF_NAME `
             "artifacts/package/Plus-One-Trainer-$env:RELEASE_VERSION-win-x86.zip" `
             "artifacts/package/Plus-One-Trainer-$env:RELEASE_VERSION-win-x86.zip.sha256" `
-            --title "+1 修改器 1.0 Beta 2" `
+            --title "+1 修改器 1.0 Beta 3" `
             --notes-file docs/RELEASE_NOTES_1.0_BETA.md `
             --prerelease `
             --verify-tag

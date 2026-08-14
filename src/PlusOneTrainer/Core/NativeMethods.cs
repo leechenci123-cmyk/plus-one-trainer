@@ -4,6 +4,24 @@ namespace PlusOneTrainer.Core;
 
 internal static class NativeMethods
 {
+    internal const uint Th32csSnapProcess = 0x00000002;
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    internal struct ProcessEntry32
+    {
+        internal uint Size;
+        internal uint Usage;
+        internal uint ProcessId;
+        internal IntPtr DefaultHeapId;
+        internal uint ModuleId;
+        internal uint Threads;
+        internal uint ParentProcessId;
+        internal int BasePriority;
+        internal uint Flags;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
+        internal string ExeFile;
+    }
+
     [StructLayout(LayoutKind.Sequential)]
     internal struct Point
     {
@@ -79,6 +97,17 @@ internal static class NativeMethods
 
     [DllImport("kernel32.dll", SetLastError = true)]
     internal static extern IntPtr OpenProcess(ProcessAccess access, bool inheritHandle, int processId);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    internal static extern IntPtr CreateToolhelp32Snapshot(uint flags, uint processId);
+
+    [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    internal static extern bool Process32First(IntPtr snapshot, ref ProcessEntry32 entry);
+
+    [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    internal static extern bool Process32Next(IntPtr snapshot, ref ProcessEntry32 entry);
 
     [DllImport("kernel32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]

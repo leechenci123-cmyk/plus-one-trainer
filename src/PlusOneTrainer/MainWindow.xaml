@@ -53,7 +53,7 @@
                                 CornerRadius="10" Padding="12,5" Margin="0,0,0,4" Effect="{StaticResource SmallShadow}">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="{DynamicResource AppName}" FontWeight="Bold" FontSize="17" />
-                                <TextBlock Text="  1.0 Beta 2" FontWeight="Bold" Foreground="{StaticResource LeafDark}" />
+                                <TextBlock Text="  1.0 Beta 3" FontWeight="Bold" Foreground="{StaticResource LeafDark}" />
                             </StackPanel>
                         </Border>
                     </Grid>
@@ -309,7 +309,7 @@
                         <TextBlock Text="{DynamicResource LabTitle}" Style="{StaticResource PageTitle}" />
                         <TextBlock Text="{DynamicResource LabSubtitle}" Style="{StaticResource PageSubtitle}" />
                         <Border Style="{StaticResource Card}" Background="#FFF1C8" BorderBrush="#C99942">
-                            <TextBlock Text="{DynamicResource RemoteCallsBeta2Note}" TextWrapping="Wrap" />
+                            <TextBlock Text="{DynamicResource RemoteCallsBeta3Note}" TextWrapping="Wrap" />
                         </Border>
                         <Grid>
                             <Grid.ColumnDefinitions><ColumnDefinition Width="1.2*" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>

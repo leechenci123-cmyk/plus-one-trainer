@@ -2,6 +2,14 @@ using PlusOneTrainer.Core;
 using PlusOneTrainer.Models;
 using System.IO;
 
+if (args.SequenceEqual(["--live-attach-probe"]))
+{
+    var result = GameSession.TryAttach();
+    Console.WriteLine($"{result.State}: {result.Details}");
+    result.Session?.Dispose();
+    return result.State == AttachmentState.Attached ? 0 : 1;
+}
+
 var tests = new (string Name, Action Run)[]
 {
     ("Supported profile constants", ProfileConstants),
@@ -254,7 +262,7 @@ static void MainWindowResourceReferences()
 static void SteamRuntimeTimestampGate()
 {
     Equal(true, GameSession.IsSupportedRuntimeStamp(0x4D02B058));
-    Equal(true, GameSession.IsSupportedRuntimeStamp(0x48ECEE74));
+    Equal(false, GameSession.IsSupportedRuntimeStamp(0x48ECEE74));
     Equal(false, GameSession.IsSupportedRuntimeStamp(0));
     Equal(false, GameSession.IsSupportedRuntimeStamp(0x49ECF563));
 }

@@ -3,7 +3,7 @@
                     xmlns:sys="clr-namespace:System;assembly=System.Runtime">
     <sys:String x:Key="AppName">+1 修改器</sys:String>
     <sys:String x:Key="AppTagline">把麻烦减一，把顺手加一</sys:String>
-    <sys:String x:Key="VersionLabel">1.0 Beta 2</sys:String>
+    <sys:String x:Key="VersionLabel">1.0 Beta 3</sys:String>
     <sys:String x:Key="NavConvenience">⌂  方便功能</sys:String>
     <sys:String x:Key="NavChallenge">⚑  挑战设置</sys:String>
     <sys:String x:Key="NavModes">▦  隐藏模式</sys:String>
@@ -97,7 +97,7 @@
 
     <sys:String x:Key="LabTitle">测试工坊</sys:String>
     <sys:String x:Key="LabSubtitle">像“我是僵尸”一样放置测试对象；自动检查战斗状态、行数与特殊僵尸风险。</sys:String>
-    <sys:String x:Key="RemoteCallsBeta2Note">Beta 2 已连接正版 Steam 包装环境，但放僵尸、扶梯与夜晚屋顶依赖尚未验证的游戏内部调用，因此继续禁用。血条、速度、自动收集和常规作弊可先测试。</sys:String>
+    <sys:String x:Key="RemoteCallsBeta3Note">Beta 3 会验证正版 Steam 父进程并连接其真正的 popcapgame1 游戏子进程。放僵尸、扶梯与夜晚屋顶仍依赖尚未验证的内部调用，因此继续禁用；血条、速度、自动收集和常规作弊可先测试。</sys:String>
     <sys:String x:Key="ZombieSpawner">放置僵尸</sys:String>
     <sys:String x:Key="ZombieType">僵尸类型</sys:String>
     <sys:String x:Key="Row">行</sys:String>
@@ -144,7 +144,7 @@
     <sys:String x:Key="Chinese">简体中文</sys:String>
     <sys:String x:Key="English">English</sys:String>
     <sys:String x:Key="Compatibility">兼容性</sys:String>
-    <sys:String x:Key="CompatibilityText">Beta 2 支持同一 SHA-256 白名单下的 Steam GOTY 1.2.0.1096 英文版，以及正版 Steam 包装运行时间戳 0x48ECEE74；仍须通过运行时对象检查。</sys:String>
+    <sys:String x:Key="CompatibilityText">Beta 3 验证 Steam 包装父进程的 SHA-256，再连接其 popcapgame1 子进程；子进程须为 x86、时间戳 0x4D02B058，并通过运行时对象检查。</sys:String>
     <sys:String x:Key="Implementation">实现方式</sys:String>
     <sys:String x:Key="ImplementationText">外部 x86 工具；使用 Win32 进程内存 API 与短暂远程代码片段调用游戏自身对象创建函数。不注入 DLL，不修改 EXE，不绕过 Steam/DRM。</sys:String>
     <sys:String x:Key="References">参考与致谢</sys:String>
@@ -167,9 +167,9 @@
     <sys:String x:Key="ErrorPatchOwnership">补丁字节已被外部改变，本修改器拒绝覆盖。</sys:String>
     <sys:String x:Key="ErrorRemoteBusy">上一次游戏内部调用仍在执行，新的调用已阻止。</sys:String>
     <sys:String x:Key="ErrorRemoteTimeout">游戏内部调用超时；工具会保留安全护栏并等待它结束。</sys:String>
-    <sys:String x:Key="ErrorRemoteCallsUnavailable">Beta 2 尚未验证正版 Steam 包装环境中的游戏内部函数，因此测试工坊与夜晚屋顶保持禁用。</sys:String>
+    <sys:String x:Key="ErrorRemoteCallsUnavailable">Beta 3 尚未验证游戏内部函数调用，因此测试工坊与夜晚屋顶保持禁用。</sys:String>
     <sys:String x:Key="ErrorAdventureRequired">完成冒险模式一周目后才可显示 Limbo Page。</sys:String>
-    <sys:String x:Key="ErrorBobsledUnavailable">雪橇队会一次创建四只僵尸；Beta 2 禁用全部内部生成调用，后续版本还须能可靠追踪并只清除这四只后才会开放。</sys:String>
+    <sys:String x:Key="ErrorBobsledUnavailable">雪橇队会一次创建四只僵尸；Beta 3 禁用全部内部生成调用，后续版本还须能可靠追踪并只清除这四只后才会开放。</sys:String>
     <sys:String x:Key="ErrorInvalidNumericSettings">数值设置无效，请检查倍率、起始值与上限。</sys:String>
     <sys:String x:Key="RemoteCleanupWaiting">正在等待游戏内部调用安全结束并恢复护栏，请勿强制关闭。</sys:String>
 </ResourceDictionary>

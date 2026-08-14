@@ -1,21 +1,21 @@
 # +1 修改器 1.0 Beta / Plus One Trainer 1.0 Beta
 
-技术版本 / Technical version: `1.0.0-beta.2`
+技术版本 / Technical version: `1.0.0-beta.3`
 
-这是第二个公开测试版本，只支持 Steam GOTY 英文版 `1.2.0.1096`（x86）的精确白名单文件。请先使用“存档保险箱”备份整个存档目录。
+这是第三个公开测试版本，只支持 Steam GOTY 英文版 `1.2.0.1096`（x86）的精确白名单文件。请先使用“存档保险箱”备份整个存档目录。
 
-This is the second public beta and supports only the exact allow-listed English Steam GOTY `1.2.0.1096` x86 executable. Back up the complete save directory with Save Vault before testing.
+This is the third public beta and supports only the exact allow-listed English Steam GOTY `1.2.0.1096` x86 executable. Back up the complete save directory with Save Vault before testing.
 
-## Beta 2 兼容性修复 / Beta 2 compatibility fix
+## Beta 3 连接修复 / Beta 3 attachment fix
 
-- 识别同一白名单正版 EXE 在 Steam DRM 包装进程中显示的运行时间戳 `0x48ECEE74`，不再把它直接误判为其他游戏版本。
-- 仍要求固定 SHA-256、x86、映像基址、Lawn/Board 指针以及 UI/模式/场景值域全部通过。
-- Beta 2 优先开放只读血条、速度、自动收集、Limbo 与带原字节校验的常规作弊。
+- 验证白名单 Steam 包装父进程后，连接由它启动的真正 `popcapgame1.exe` 游戏子进程，不再把包装壳当作游戏本体。
+- 实机只读验证已确认子进程时间戳 `0x4D02B058`、Lawn/Board/UI/scene 和关键补丁原字节。
+- Beta 3 开放只读血条、速度、自动收集、Limbo 与带原字节校验的常规作弊供测试。
 - 测试工坊、扶梯、夜晚屋顶、高级暂停和挑战规则继续禁用，直到内部函数签名完成实机验证。
 
-- Recognizes runtime timestamp `0x48ECEE74` exposed by the official Steam DRM wrapper for the same allow-listed executable.
-- Exact SHA-256, x86 architecture, image base, Lawn/Board pointers, and UI/mode/scene ranges must still pass.
-- Beta 2 prioritizes read-only health bars, speed, auto collect, Limbo, and ordinary exact-preimage patches.
+- Verifies the allow-listed Steam wrapper parent, then attaches to the real `popcapgame1.exe` child it launched instead of treating the wrapper as the game image.
+- A live read-only probe confirmed child timestamp `0x4D02B058`, Lawn/Board/UI/scene, and critical patch preimages.
+- Beta 3 exposes read-only health bars, speed, auto collect, Limbo, and ordinary exact-preimage patches for testing.
 - Test workshop, ladder placement, Night Roof, Advanced Pause, and challenge rules remain disabled pending live signature verification.
 
 ## 本版可测试 / Available for testing

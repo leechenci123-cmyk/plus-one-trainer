@@ -413,7 +413,7 @@ public sealed class TrainerEngine : IDisposable
     {
         if (!SupportsRemoteCalls)
             throw new TrainerException("ErrorRemoteCallsUnavailable",
-                "Internal game calls remain disabled for the Steam wrapper runtime in Beta 2.");
+                "Internal game calls remain disabled in Beta 3.");
     }
 
     public void Dispose()

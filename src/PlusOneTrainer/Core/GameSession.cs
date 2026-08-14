@@ -14,7 +14,7 @@ public sealed record AttachmentResult(AttachmentState State, GameSession? Sessio
 public sealed class GameSession : IDisposable
 {
     private const uint RuntimeTimeDateStamp1096 = 0x4D02B058;
-    private const uint SteamWrapperTimeDateStamp1096 = 0x48ECEE74;
+    private const string SteamRuntimeProcessName = "popcapgame1";
     private readonly Dictionary<uint, MemoryPatch> _ownedPatches = [];
     private readonly object _patchGate = new();
     private bool _disposed;
@@ -26,15 +26,17 @@ public sealed class GameSession : IDisposable
     public IntPtr GameWindow => Memory.Process.MainWindowHandle;
     public string ExecutablePath { get; }
     public uint RuntimeTimeDateStamp { get; }
-    public bool IsSteamWrapperRuntime => RuntimeTimeDateStamp == SteamWrapperTimeDateStamp1096;
+    public bool IsSteamWrapperRuntime { get; }
     public bool SupportsRemoteCalls => false;
 
-    private GameSession(ProcessMemory memory, GameVersionProfile profile, string executablePath, uint runtimeTimeDateStamp)
+    private GameSession(ProcessMemory memory, GameVersionProfile profile, string executablePath,
+        uint runtimeTimeDateStamp, bool isSteamWrapperRuntime)
     {
         Memory = memory;
         Profile = profile;
         ExecutablePath = executablePath;
         RuntimeTimeDateStamp = runtimeTimeDateStamp;
+        IsSteamWrapperRuntime = isSteamWrapperRuntime;
         Calls = new RemoteGameCalls(memory, profile);
         AdvancedPause = AdvancedPauseController.Detect(memory);
     }
@@ -59,10 +61,20 @@ public sealed class GameSession : IDisposable
                     return new AttachmentResult(AttachmentState.Unsupported, null, $"SHA-256: {hash}");
                 }
 
+                var runtimeProcess = FindSteamRuntimeChild(process.Id);
+                if (runtimeProcess is null)
+                {
+                    process.Dispose();
+                    return new AttachmentResult(AttachmentState.Unsupported, null,
+                        "The verified Steam wrapper is running, but its popcapgame1 runtime child is not ready yet.");
+                }
+                process.Dispose();
+
                 var profile = new GameVersionProfile();
-                var memory = ProcessMemory.Open(process);
+                ProcessMemory? memory = null;
                 try
                 {
+                    memory = ProcessMemory.Open(runtimeProcess);
                     var peOffset = memory.ReadUInt32(memory.ImageBase + 0x3C);
                     var machine = BitConverter.ToUInt16(memory.ReadBytes(memory.ImageBase + peOffset + 4, 2));
                     var runtimeStamp = memory.ReadUInt32(memory.ImageBase + peOffset + 8);
@@ -73,18 +85,17 @@ public sealed class GameSession : IDisposable
                         return new AttachmentResult(AttachmentState.Unsupported, null,
                             $"Runtime architecture: machine=0x{machine:X4}, optional=0x{optionalMagic:X4}");
                     }
-                    if (!IsSupportedRuntimeStamp(runtimeStamp))
+                    if (runtimeStamp != RuntimeTimeDateStamp1096)
                     {
                         memory.Dispose();
                         return new AttachmentResult(AttachmentState.Unsupported, null,
                             $"Runtime PE timestamp: 0x{runtimeStamp:X8}");
                     }
-                    if (runtimeStamp == SteamWrapperTimeDateStamp1096 &&
-                        memory.ImageBase != GameVersionProfile.PreferredImageBase)
+                    if (memory.ImageBase != GameVersionProfile.PreferredImageBase)
                     {
                         memory.Dispose();
                         return new AttachmentResult(AttachmentState.Unsupported, null,
-                            $"Steam wrapper image base: 0x{memory.ImageBase:X8}");
+                            $"Steam runtime image base: 0x{memory.ImageBase:X8}");
                     }
 
                     var lawn = memory.ResolveLawn(profile);
@@ -117,14 +128,15 @@ public sealed class GameSession : IDisposable
                     }
 
                     return new AttachmentResult(AttachmentState.Attached,
-                        new GameSession(memory, profile, path, runtimeStamp),
-                        runtimeStamp == SteamWrapperTimeDateStamp1096
-                            ? profile.DisplayName + " · Steam wrapper verified"
-                            : profile.DisplayName);
+                        new GameSession(memory, profile, path, runtimeStamp, true),
+                        profile.DisplayName + " · Steam child runtime verified");
                 }
                 catch
                 {
-                    memory.Dispose();
+                    if (memory is not null)
+                        memory.Dispose();
+                    else
+                        runtimeProcess.Dispose();
                     throw;
                 }
             }
@@ -138,8 +150,58 @@ public sealed class GameSession : IDisposable
         return new AttachmentResult(AttachmentState.NotRunning, null, "No readable game process was found.");
     }
 
-    public static bool IsSupportedRuntimeStamp(uint stamp) =>
-        stamp is RuntimeTimeDateStamp1096 or SteamWrapperTimeDateStamp1096;
+    public static bool IsSupportedRuntimeStamp(uint stamp) => stamp == RuntimeTimeDateStamp1096;
+
+    internal static int? TryGetParentProcessId(int processId)
+    {
+        var snapshot = NativeMethods.CreateToolhelp32Snapshot(NativeMethods.Th32csSnapProcess, 0);
+        if (snapshot == IntPtr.Zero || snapshot == new IntPtr(-1))
+            return null;
+        try
+        {
+            var entry = new NativeMethods.ProcessEntry32
+            {
+                Size = checked((uint)System.Runtime.InteropServices.Marshal.SizeOf<NativeMethods.ProcessEntry32>())
+            };
+            if (!NativeMethods.Process32First(snapshot, ref entry))
+                return null;
+            do
+            {
+                if (entry.ProcessId == processId)
+                    return checked((int)entry.ParentProcessId);
+            } while (NativeMethods.Process32Next(snapshot, ref entry));
+            return null;
+        }
+        finally
+        {
+            NativeMethods.CloseHandle(snapshot);
+        }
+    }
+
+    private static Process? FindSteamRuntimeChild(int wrapperProcessId)
+    {
+        foreach (var child in Process.GetProcessesByName(SteamRuntimeProcessName)
+                     .OrderByDescending(x => SafeStartTime(x)))
+        {
+            try
+            {
+                if (TryGetParentProcessId(child.Id) == wrapperProcessId)
+                    return child;
+            }
+            catch
+            {
+                // Ignore stale candidates and continue looking for the verified wrapper's child.
+            }
+            child.Dispose();
+        }
+        return null;
+    }
+
+    private static DateTime SafeStartTime(Process process)
+    {
+        try { return process.StartTime; }
+        catch { return DateTime.MinValue; }
+    }
 
     public bool IsBattle => ReadGameUi() == 3;
 
