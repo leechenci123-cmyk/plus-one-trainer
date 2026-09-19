@@ -22,7 +22,7 @@
     <SolidColorBrush x:Key="Danger" Color="{StaticResource DangerColor}" />
     <SolidColorBrush x:Key="Sky" Color="{StaticResource SkyColor}" />
 
-    <DropShadowEffect x:Key="SoftShadow" BlurRadius="18" ShadowDepth="3" Opacity="0.18" Color="#281A12" />
+    <DropShadowEffect x:Key="SoftShadow" BlurRadius="14" ShadowDepth="2" Opacity="0.10" Color="#281A12" />
     <DropShadowEffect x:Key="SmallShadow" BlurRadius="8" ShadowDepth="2" Opacity="0.22" Color="#281A12" />
 
     <Style TargetType="Window">
@@ -47,8 +47,8 @@
 
     <Style x:Key="Card" TargetType="Border">
         <Setter Property="Background" Value="{StaticResource Paper}" />
-        <Setter Property="BorderBrush" Value="#C9B78E" />
-        <Setter Property="BorderThickness" Value="1.5" />
+        <Setter Property="BorderBrush" Value="#D5C8A6" />
+        <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="16" />
         <Setter Property="Padding" Value="20" />
         <Setter Property="Margin" Value="0,0,0,16" />
@@ -106,12 +106,16 @@
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="Bd" Property="Opacity" Value="0.9" />
                         </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="#E2A92D" />
+                            <Setter TargetName="Bd" Property="BorderThickness" Value="2" />
+                        </Trigger>
                         <Trigger Property="IsPressed" Value="True">
                             <Setter TargetName="Bd" Property="BorderThickness" Value="0,2,0,1" />
                             <Setter TargetName="Bd" Property="Padding" Value="16,11,16,9" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="Bd" Property="Opacity" Value="0.42" />
+                            <Setter TargetName="Bd" Property="Opacity" Value="0.60" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

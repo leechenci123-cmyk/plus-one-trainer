@@ -23,11 +23,14 @@ public sealed class GameSession : IDisposable
     public GameVersionProfile Profile { get; }
     public RemoteGameCalls Calls { get; }
     public AdvancedPauseController AdvancedPause { get; }
+    public AutoCollectController AutoCollect { get; }
     public IntPtr GameWindow => Memory.Process.MainWindowHandle;
     public string ExecutablePath { get; }
     public uint RuntimeTimeDateStamp { get; }
     public bool IsSteamWrapperRuntime { get; }
-    public bool SupportsRemoteCalls => false;
+    // The Steam child is accepted only after the parent hash, x86 PE identity,
+    // timestamp, image base, and live object sanity checks above all pass.
+    public bool SupportsRemoteCalls => IsSteamWrapperRuntime && RuntimeTimeDateStamp == RuntimeTimeDateStamp1096;
 
     private GameSession(ProcessMemory memory, GameVersionProfile profile, string executablePath,
         uint runtimeTimeDateStamp, bool isSteamWrapperRuntime)
@@ -38,7 +41,8 @@ public sealed class GameSession : IDisposable
         RuntimeTimeDateStamp = runtimeTimeDateStamp;
         IsSteamWrapperRuntime = isSteamWrapperRuntime;
         Calls = new RemoteGameCalls(memory, profile);
-        AdvancedPause = AdvancedPauseController.Detect(memory);
+        AdvancedPause = AdvancedPauseController.Detect(this);
+        AutoCollect = new AutoCollectController(this);
     }
 
     public static AttachmentResult TryAttach()
@@ -119,7 +123,7 @@ public sealed class GameSession : IDisposable
                     if (board != 0)
                     {
                         var scene = memory.ReadInt32(board + profile.Scene);
-                        if (scene is < 0 or > 5)
+                        if (scene is < 0 or > 9)
                         {
                             memory.Dispose();
                             return new AttachmentResult(AttachmentState.Unsupported, null,
@@ -309,6 +313,8 @@ public sealed class GameSession : IDisposable
     {
         if (_disposed)
             return;
+        AutoCollect.Dispose();
+        AdvancedPause.Dispose();
         Calls.BeginClose();
         if (!Calls.TryDispose())
             return;

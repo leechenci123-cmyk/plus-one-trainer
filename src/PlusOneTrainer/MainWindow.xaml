@@ -20,9 +20,9 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <Border x:Name="StatusDot" Width="12" Height="12" CornerRadius="6" Background="#C99942" Margin="0,0,10,0" />
-                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
                     <TextBlock x:Name="StatusText" Text="{DynamicResource StatusSearching}" FontWeight="SemiBold" />
-                    <TextBlock x:Name="StatusDetails" Margin="10,0,0,0" Foreground="#817465" FontSize="12" />
+                    <TextBlock x:Name="StatusDetails" Margin="0,3,12,0" Foreground="#817465" FontSize="11" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
                 </StackPanel>
                 <Border x:Name="ReadOnlyPill" Grid.Column="2" Style="{StaticResource Pill}" Margin="10,0"
                         Visibility="Collapsed" Background="#F1D5AA">
@@ -53,7 +53,7 @@
                                 CornerRadius="10" Padding="12,5" Margin="0,0,0,4" Effect="{StaticResource SmallShadow}">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="{DynamicResource AppName}" FontWeight="Bold" FontSize="17" />
-                                <TextBlock Text="  1.0 Beta 4" FontWeight="Bold" Foreground="{StaticResource LeafDark}" />
+                                <TextBlock Text="  1.0 Beta 5" FontWeight="Bold" Foreground="{StaticResource LeafDark}" />
                             </StackPanel>
                         </Border>
                     </Grid>
@@ -136,7 +136,9 @@
                             <Border Style="{StaticResource Card}" Margin="0,0,16,16">
                                 <StackPanel>
                                     <TextBlock Text="{DynamicResource ConvenienceTitle}" Style="{StaticResource SectionTitle}" />
-                                    <CheckBox x:Name="AutoCollectCheck" Content="{DynamicResource AutoCollect}" Checked="AutoCollect_Changed" Unchecked="AutoCollect_Changed" />
+                                    <CheckBox x:Name="AutoCollectCheck" Checked="AutoCollect_Changed" Unchecked="AutoCollect_Changed">
+                                        <TextBlock Text="{DynamicResource AutoCollect}" TextWrapping="Wrap" MaxWidth="350" />
+                                    </CheckBox>
                                     <CheckBox x:Name="FocusPauseCheck" Content="{DynamicResource PauseOnFocusLoss}" IsEnabled="False" />
                                 </StackPanel>
                             </Border>

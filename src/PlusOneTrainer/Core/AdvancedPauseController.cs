@@ -1,9 +1,8 @@
 namespace PlusOneTrainer.Core;
 
 /// <summary>
-/// Owns the verified Advanced Pause patch. Version 1.0 intentionally ships with no guessed
-/// Steam signature: the capability remains unavailable until a runtime capture is reviewed
-/// and added to <see cref="VerifiedSignatures"/>.
+/// Owns the verified two-site Steam 1096 Board-update patch. It fails closed if either
+/// preimage or its surrounding control-flow bytes differ.
 /// </summary>
 public sealed class AdvancedPauseController : IDisposable
 {
@@ -14,19 +13,38 @@ public sealed class AdvancedPauseController : IDisposable
     private readonly byte[] _original;
     private readonly byte[] _enabled;
     private bool _ownsPatch;
+    private GameSession? _session;
+    private static readonly MemoryPatch[] SteamPatches =
+    [
+        new(0x4192D4, [0xE9, 0x1D, 0, 0, 0, 0x90], [0x8B, 0x85, 0xA4, 0, 0, 0]),
+        new(0x419309, [0xE9, 0x7D, 0x01, 0, 0, 0x90], [0x8B, 0x85, 0x90, 0x55, 0, 0])
+    ];
 
-    public bool IsSupported => _memory is not null;
+    public bool IsSupported => _session is not null || _memory is not null;
     public string UnavailableReason { get; }
 
     public bool IsPaused
     {
         get
         {
+            if (_session is not null)
+                return _ownsPatch && _session.Memory.IsAlive &&
+                    SteamPatches.All(p => _session.Memory.GetPatchState(p) == PatchState.Enabled);
             if (!_ownsPatch || _memory?.IsAlive != true)
                 return false;
             try { return _memory.ReadBytes(_patchAddress, _enabled.Length).SequenceEqual(_enabled); }
             catch { return false; }
         }
+    }
+
+    public static AdvancedPauseController Detect(GameSession session)
+    {
+        var memory = session.Memory;
+        var matched = SteamPatches.All(p => memory.GetPatchState(p) == PatchState.Original) &&
+            memory.ReadBytes(0x4192F6, 8).SequenceEqual(new byte[] { 0x8B, 0x85, 0x6C, 0x57, 0, 0, 0x33, 0xFF }) &&
+            memory.ReadBytes(0x4194B5, 7).SequenceEqual(new byte[] { 0x8B, 0x8C, 0x24, 0x14, 0x01, 0, 0 });
+        return matched ? new AdvancedPauseController("") { _session = session } :
+            new AdvancedPauseController("Steam Board update signature mismatch; no pause patch was applied.");
     }
 
     private AdvancedPauseController(string unavailableReason)
@@ -86,6 +104,12 @@ public sealed class AdvancedPauseController : IDisposable
 
     public void SetPaused(bool enabled)
     {
+        if (_session is not null)
+        {
+            _session.Calls.RunGuarded(() => _session.SetPatchGroup(SteamPatches, enabled));
+            _ownsPatch = enabled;
+            return;
+        }
         if (_memory is null)
             throw new TrainerException("ErrorAdvancedPauseUnavailable", UnavailableReason);
         if (!_memory.IsAlive)
@@ -116,6 +140,11 @@ public sealed class AdvancedPauseController : IDisposable
 
     public void Dispose()
     {
+        if (_session is not null)
+        {
+            if (_ownsPatch && _session.Memory.IsAlive) SetPaused(false);
+            return;
+        }
         if (!_ownsPatch || _memory?.IsAlive != true)
             return;
         try { SetPaused(false); }

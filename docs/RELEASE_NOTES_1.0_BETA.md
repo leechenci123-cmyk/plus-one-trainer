@@ -1,10 +1,19 @@
 # +1 修改器 1.0 Beta / Plus One Trainer 1.0 Beta
 
-技术版本 / Technical version: `1.0.0-beta.4`
+技术版本 / Technical version: `1.0.0-beta.5`
 
-这是第四个公开测试版本，只支持 Steam GOTY 英文版 `1.2.0.1096`（x86）的精确白名单文件。请先使用“存档保险箱”备份整个存档目录。
+这是第五个公开测试版本，只支持 Steam GOTY 英文版 `1.2.0.1096`（x86）的精确白名单文件。请先使用“存档保险箱”备份整个存档目录。
 
-This is the fourth public beta and supports only the exact allow-listed English Steam GOTY `1.2.0.1096` x86 executable. Back up the complete save directory with Save Vault before testing.
+This is the fifth public beta and supports only the exact allow-listed English Steam GOTY `1.2.0.1096` x86 executable. Back up the complete save directory with Save Vault before testing.
+
+## Beta 5 实机验证 / Beta 5 live verification
+
+- 高级暂停已验证：世界时钟停住，关闭后恢复；补丁只在主循环边界安装并恢复。
+- 测试工坊的原生普通僵尸放置和按身份清理已验证；雪橇队、僵王和扶梯仍按场景护栏逐项测试。
+- Auto Collect 改为调用原生 Coin::Collect，金币、阳光、花园礼物和巧克力按游戏自己的结算路径到账。
+- Advanced Pause is live-verified: the world clock holds and resumes, with installation and restoration at the main-loop boundary.
+- Native ordinary-zombie placement and identity-safe cleanup are live-verified; Bobsled Team, Dr. Zomboss, and ladders remain scenario-gated.
+- Auto Collect now calls the native Coin::Collect path so wallet, sun, garden gifts, and chocolate use the game's own accounting.
 
 ## Beta 4 钱包功能 / Beta 4 wallet feature
 

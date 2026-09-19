@@ -27,6 +27,7 @@ public partial class MainWindow : Window
     private bool _limboEnabled;
     private bool _nightRoofEnabled;
     private bool _moneyBackupCreated;
+    private bool _focusPaused;
     private bool _closingAfterRemoteCleanup;
     private DateTime _nextAutoAttach = DateTime.MinValue;
     private HwndSource? _windowSource;
@@ -51,6 +52,7 @@ public partial class MainWindow : Window
         var hwnd = _windowSource?.Handle ?? IntPtr.Zero;
         if (hwnd != IntPtr.Zero)
         {
+            NativeMethods.RegisterHotKey(hwnd, 1, NativeMethods.ModNoRepeat, 0x72); // F3
             NativeMethods.RegisterHotKey(hwnd, 2, NativeMethods.ModNoRepeat, 0x73); // F4
             NativeMethods.RegisterHotKey(hwnd, 3, NativeMethods.ModNoRepeat, 0x77); // F8
         }
@@ -110,6 +112,7 @@ public partial class MainWindow : Window
         var hwnd = _windowSource?.Handle ?? IntPtr.Zero;
         if (hwnd != IntPtr.Zero)
         {
+            NativeMethods.UnregisterHotKey(hwnd, 1);
             NativeMethods.UnregisterHotKey(hwnd, 2);
             NativeMethods.UnregisterHotKey(hwnd, 3);
         }
@@ -128,7 +131,7 @@ public partial class MainWindow : Window
             switch (wParam.ToInt32())
             {
                 case 1:
-                    ShowToast(LocalizationService.Text("ErrorAdvancedPauseUnavailable"));
+                    RunWithGame(engine => { engine.ToggleAdvancedPause(); _focusPaused = false; UpdatePauseButton(); });
                     break;
                 case 2:
                     RunWithGame(engine =>
@@ -170,6 +173,21 @@ public partial class MainWindow : Window
         try
         {
             _engine.ObserveGameContext();
+            if (_engine.SupportsAdvancedPause)
+            {
+                var foreground = NativeMethods.GetForegroundWindow() == _engine.Session.GameWindow;
+                if (!_engine.Session.IsBattle || (_focusPaused && (foreground || FocusPauseCheck.IsChecked != true)))
+                {
+                    _engine.SetAdvancedPause(false);
+                    _focusPaused = false;
+                }
+                else if (FocusPauseCheck.IsChecked == true && !foreground && !_engine.AdvancedPaused)
+                {
+                    _engine.SetAdvancedPause(true);
+                    _focusPaused = true;
+                }
+                UpdatePauseButton();
+            }
             if (_engine.Session.IsBattle)
                 PopulateCoordinates(_engine.Session.RowCount);
         }
@@ -197,6 +215,7 @@ public partial class MainWindow : Window
                 _healthOverlay = null;
                 _engine?.Dispose();
                 _engine = new TrainerEngine(result.Session, _saveVault);
+                ResetSessionControls();
                 _moneyBackupCreated = false;
                 EnsureHealthOverlay();
                 SetAttachmentState(AttachmentState.Attached, result.Details);
@@ -227,6 +246,7 @@ public partial class MainWindow : Window
         _state = state;
         _stateDetails = details;
         StatusDetails.Text = details;
+        StatusDetails.ToolTip = details;
         ReadOnlyPill.Visibility = state == AttachmentState.Unsupported ? Visibility.Visible : Visibility.Collapsed;
         switch (state)
         {
@@ -243,6 +263,20 @@ public partial class MainWindow : Window
                 StatusDot.Background = new SolidColorBrush(Color.FromRgb(197, 151, 64));
                 break;
         }
+    }
+
+    private void ResetSessionControls()
+    {
+        _suppressUi = true;
+        try
+        {
+            foreach (var check in new[] { AutoCollectCheck, SunLimitCheck, NoCooldownCheck,
+                         FreePlantingCheck, PlantInvincibleCheck, MushroomsAwakeCheck, FocusPauseCheck,
+                         DifficultyEnabledCheck }) check.IsChecked = false;
+            _limboEnabled = _nightRoofEnabled = _focusPaused = false;
+            LimboButton.Content = LocalizationService.Text("UnlockLimbo");
+        }
+        finally { _suppressUi = false; }
     }
 
     private void Nav_Click(object sender, RoutedEventArgs e)
@@ -352,7 +386,8 @@ public partial class MainWindow : Window
     private void UpdateRemoteCallCapability()
     {
         var supported = _engine?.SupportsRemoteCalls == true;
-        NightRoofButton.IsEnabled = supported;
+        // Scene mixing is still experimental; keep it behind a separate live-test gate.
+        NightRoofButton.IsEnabled = false;
         SpawnZombieButton.IsEnabled = supported;
         PlaceLadderButton.IsEnabled = supported;
         ClearLabButton.IsEnabled = supported;
@@ -546,8 +581,12 @@ public partial class MainWindow : Window
 
     private void UpdateSaveLocation()
     {
-        SaveLocationText.Text = _saveVault.LocateSaveDirectory(_engine?.Session.ExecutablePath)
-                                ?? LocalizationService.Text("ErrorSaveNotFound");
+        try
+        {
+            SaveLocationText.Text = _saveVault.LocateSaveDirectory(_engine?.Session.ExecutablePath)
+                                    ?? LocalizationService.Text("ErrorSaveNotFound");
+        }
+        catch (Exception ex) { SaveLocationText.Text = ex.Message; }
     }
 
     private void PopulateCoordinates(int rows)

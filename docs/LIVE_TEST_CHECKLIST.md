@@ -1,8 +1,8 @@
 # 1.0 实机测试清单 / Live-test checklist
 
-当前状态：**1.0 Beta 4**（`1.0.0-beta.4`）。本文件只列待测项目；编写和离线测试期间不得自动启动游戏。只有用户明确说当前可以占用 Steam 家庭库时，才执行这些测试。
+当前状态：**1.0 Beta 5**（`1.0.0-beta.5`）。本文件列出仍需用户逐项确认的项目；编写和离线测试期间不得自动启动游戏。
 
-Current status: **1.0 Beta 4** (`1.0.0-beta.4`). This file records pending live tests. Development and offline tests must never start the game automatically. Run these only after the user explicitly confirms that the shared Steam library is available.
+Current status: **1.0 Beta 5** (`1.0.0-beta.5`). This file records the remaining user-confirmed live checks. Development and offline tests must never start the game automatically.
 
 ## 0. 前置保护 / Preconditions
 
@@ -63,4 +63,4 @@ Current status: **1.0 Beta 4** (`1.0.0-beta.4`). This file records pending live 
 - [ ] 中文/英文 UI 全页截图，无截断、乱码、重叠；100%/125%/150% DPI。
 - [ ] Windows 10、Windows 11；普通权限；无 .NET 预装机器运行 self-contained 包。
 - [ ] Release ZIP 内容、EXE x86/FileVersion、ZIP 与 EXE SHA-256、.NET 许可证文件、源码 tag 一致。
-- [ ] 全部关键项通过后才把 `1.0.0-beta.4` 提升为 `1.0.0`。
+- [ ] 全部关键项通过后才把 `1.0.0-beta.5` 提升为 `1.0.0`。

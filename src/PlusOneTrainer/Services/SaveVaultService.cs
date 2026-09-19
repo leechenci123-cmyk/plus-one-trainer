@@ -20,14 +20,17 @@ public sealed class SaveVaultService
 {
     private const string ManifestName = "plus-one-backup.json";
     private readonly string? _saveDirectoryOverride;
+    private readonly Func<bool>? _gameRunningOverride;
     public string VaultPath { get; }
 
-    public SaveVaultService(string? vaultPath = null, string? saveDirectoryOverride = null)
+    public SaveVaultService(string? vaultPath = null, string? saveDirectoryOverride = null,
+        Func<bool>? gameRunningOverride = null)
     {
         VaultPath = vaultPath ?? Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "PlusOneTrainer", "SaveVault");
         _saveDirectoryOverride = saveDirectoryOverride;
+        _gameRunningOverride = gameRunningOverride;
     }
 
     public string? LocateSaveDirectory(string? gameExecutable = null)
@@ -47,14 +50,18 @@ public sealed class SaveVaultService
                 candidates.Add(Path.Combine(directory, "userdata"));
         }
 
-        return candidates.FirstOrDefault(path =>
-            Directory.Exists(path) && Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories).Any());
+        var matches = candidates.Select(Path.GetFullPath).Distinct(StringComparer.OrdinalIgnoreCase)
+            .Where(path => Directory.Exists(path) && File.Exists(Path.Combine(path, "users.dat"))).ToArray();
+        if (matches.Length > 1)
+            throw new InvalidOperationException("发现多套存档，无法自动选择 / Multiple save folders found: " + string.Join("; ", matches));
+        return matches.SingleOrDefault();
     }
 
     public BackupEntry CreateBackup(string reason, string? gameExecutable = null)
     {
         var source = LocateSaveDirectory(gameExecutable)
                      ?? throw new InvalidOperationException("No Plants vs. Zombies save directory was found.");
+        RejectLinks(source);
         Directory.CreateDirectory(VaultPath);
         var safeReason = string.Concat(reason.Select(c => char.IsLetterOrDigit(c) || c is '-' or '_' ? c : '-'));
         var name = $"{DateTime.Now:yyyyMMdd-HHmmss-fff}_{safeReason}";
@@ -62,7 +69,8 @@ public sealed class SaveVaultService
         Directory.CreateDirectory(destination);
 
         var hashes = new SortedDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var sourceFile in Directory.EnumerateFiles(source, "*", SearchOption.AllDirectories))
+        var sourceFiles = Directory.GetFiles(source, "*", SearchOption.AllDirectories);
+        foreach (var sourceFile in sourceFiles)
         {
             var relative = Path.GetRelativePath(source, sourceFile);
             var destinationFile = Path.Combine(destination, relative);
@@ -70,6 +78,11 @@ public sealed class SaveVaultService
             File.Copy(sourceFile, destinationFile, overwrite: false);
             hashes[relative] = Hash(destinationFile);
         }
+
+        var afterFiles = Directory.GetFiles(source, "*", SearchOption.AllDirectories);
+        if (!sourceFiles.Order(StringComparer.OrdinalIgnoreCase).SequenceEqual(afterFiles.Order(StringComparer.OrdinalIgnoreCase), StringComparer.OrdinalIgnoreCase) ||
+            hashes.Any(pair => !Hash(ResolveChildPath(source, pair.Key)).Equals(pair.Value, StringComparison.OrdinalIgnoreCase)))
+            throw new IOException("备份期间存档发生变化，请重试 / Saves changed during backup; retry.");
 
         var manifest = new BackupManifest(1, DateTime.UtcNow, reason, source, hashes);
         File.WriteAllText(Path.Combine(destination, ManifestName),
@@ -98,27 +111,45 @@ public sealed class SaveVaultService
 
     public void Restore(BackupEntry backup, string? gameExecutable = null)
     {
+        EnsureGameClosed();
         EnsureInsideVault(backup.Path);
         Verify(backup.Path);
         var destination = LocateSaveDirectory(gameExecutable)
                           ?? throw new InvalidOperationException("No Plants vs. Zombies save directory was found.");
-        CreateBackup("before-restore", gameExecutable);
+        RejectLinks(destination);
         var manifest = ReadManifest(backup.Path);
         ValidateManifest(manifest);
+        if (!Path.GetFullPath(manifest.SourcePath).Equals(Path.GetFullPath(destination), StringComparison.OrdinalIgnoreCase))
+            throw new InvalidOperationException("备份来源与当前存档目录不符 / Backup belongs to a different save folder.");
+        CreateBackup("before-restore", gameExecutable);
+        var staging = destination + ".plus-one-stage-" + Guid.NewGuid().ToString("N");
+        var previous = destination + ".plus-one-before-restore-" + Guid.NewGuid().ToString("N");
+        Directory.CreateDirectory(staging);
         foreach (var relative in manifest.Sha256.Keys)
         {
             var sourceFile = ResolveChildPath(backup.Path, relative);
-            var destinationFile = ResolveChildPath(destination, relative);
+            var destinationFile = ResolveChildPath(staging, relative);
             Directory.CreateDirectory(Path.GetDirectoryName(destinationFile)!);
             File.Copy(sourceFile, destinationFile, overwrite: true);
             if (!Hash(destinationFile).Equals(manifest.Sha256[relative], StringComparison.OrdinalIgnoreCase))
                 throw new IOException($"Restored file failed verification: {relative}");
+        }
+        EnsureGameClosed();
+        // Same-volume directory renames avoid exposing partially copied saves.
+        // Keep the previous directory for recovery, including files absent from the backup.
+        Directory.Move(destination, previous);
+        try { Directory.Move(staging, destination); }
+        catch
+        {
+            Directory.Move(previous, destination);
+            throw;
         }
     }
 
     public void Verify(string backupPath)
     {
         EnsureInsideVault(backupPath);
+        RejectLinks(backupPath);
         var manifest = ReadManifest(backupPath);
         ValidateManifest(manifest);
         foreach (var pair in manifest.Sha256)
@@ -172,5 +203,37 @@ public sealed class SaveVaultService
     {
         using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
         return Convert.ToHexString(SHA256.HashData(stream));
+    }
+
+    private void EnsureGameClosed()
+    {
+        if (_gameRunningOverride is not null)
+        {
+            if (_gameRunningOverride())
+                throw new InvalidOperationException("请先关闭游戏再恢复存档 / Close the game before restoring saves.");
+            return;
+        }
+        foreach (var name in new[] { "PlantsVsZombies", "popcapgame1" })
+        {
+            var processes = System.Diagnostics.Process.GetProcessesByName(name);
+            var running = processes.Length != 0;
+            foreach (var process in processes) process.Dispose();
+            if (running) throw new InvalidOperationException("请先关闭游戏再恢复存档 / Close the game before restoring saves.");
+        }
+    }
+
+    private static void RejectLinks(string directory)
+    {
+        var pending = new Stack<string>();
+        pending.Push(directory);
+        while (pending.Count != 0)
+        {
+            var path = pending.Pop();
+            var attributes = File.GetAttributes(path);
+            if ((attributes & FileAttributes.ReparsePoint) != 0)
+                throw new IOException("存档目录不能包含链接 / Linked save paths are not supported: " + path);
+            if ((attributes & FileAttributes.Directory) != 0)
+                foreach (var entry in Directory.EnumerateFileSystemEntries(path)) pending.Push(entry);
+        }
     }
 }

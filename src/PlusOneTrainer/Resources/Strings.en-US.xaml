@@ -3,7 +3,7 @@
                     xmlns:sys="clr-namespace:System;assembly=System.Runtime">
     <sys:String x:Key="AppName">Plus One Trainer</sys:String>
     <sys:String x:Key="AppTagline">One less hassle, one more convenience</sys:String>
-    <sys:String x:Key="VersionLabel">1.0 Beta 4</sys:String>
+    <sys:String x:Key="VersionLabel">1.0 Beta 5</sys:String>
     <sys:String x:Key="NavConvenience">⌂  Convenience</sys:String>
     <sys:String x:Key="NavChallenge">⚑  Challenge</sys:String>
     <sys:String x:Key="NavModes">▦  Hidden modes</sys:String>
@@ -28,16 +28,16 @@
     <sys:String x:Key="HomeTitle">Make the game effortless first</sys:String>
     <sys:String x:Key="HomeSubtitle">Everyday conveniences stay on the first page. Numeric cheats remain one level deeper.</sys:String>
     <sys:String x:Key="AdvancedPauseTitle">Advanced Pause</sys:String>
-    <sys:String x:Key="AdvancedPauseDescription">Target behavior: freeze the battle while keeping seed selection, planting, shoveling, and Cob Cannon input. The unique Steam 1096 runtime signature still needs live verification, so the 1.0 candidate disables this safely and never guesses an address.</sys:String>
+    <sys:String x:Key="AdvancedPauseDescription">Freezes the battle while keeping seed selection, planting, shoveling, and Cob Cannon input. Enabled only for the verified Steam 1096 child runtime.</sys:String>
     <sys:String x:Key="AdvancedPauseOn">Resume battle</sys:String>
-    <sys:String x:Key="AdvancedPauseOff">Awaiting signature verification</sys:String>
-    <sys:String x:Key="AdvancedPauseBadge">Live test pending · no writes</sys:String>
+    <sys:String x:Key="AdvancedPauseOff">Enable Advanced Pause</sys:String>
+    <sys:String x:Key="AdvancedPauseBadge">Verified · allow-listed runtime</sys:String>
     <sys:String x:Key="SpeedTitle">Game speed</sys:String>
     <sys:String x:Key="SpeedDescription">Changes frame duration only; 1.0× is the original speed.</sys:String>
     <sys:String x:Key="ApplySpeed">Apply speed</sys:String>
     <sys:String x:Key="ResetSpeed">Original speed</sys:String>
     <sys:String x:Key="AutoCollect">Auto-collect sun, coins, diamonds, chocolate, and gifts (credited on arrival)</sys:String>
-    <sys:String x:Key="PauseOnFocusLoss">Use Advanced Pause on focus loss (pending verification)</sys:String>
+    <sys:String x:Key="PauseOnFocusLoss">Use Advanced Pause on focus loss</sys:String>
     <sys:String x:Key="ConvenienceTitle">Convenience switches</sys:String>
     <sys:String x:Key="HealthBarsTitle">Lawn health bars</sys:String>
     <sys:String x:Key="HealthBarsDescription">Show durability above every plant and zombie. Zombie bars update with their moving position. Visible only while the game is foreground and in battle.</sys:String>
@@ -46,7 +46,7 @@
     <sys:String x:Key="ZombieHealthBars">Zombie bars (follow movement)</sys:String>
     <sys:String x:Key="PlantHealthBars">Plant bars</sys:String>
     <sys:String x:Key="HotkeysTitle">Hotkeys</sys:String>
-    <sys:String x:Key="HotkeyF3">F3　Advanced Pause (enabled after verification)</sys:String>
+    <sys:String x:Key="HotkeyF3">F3　Advanced Pause</sys:String>
     <sys:String x:Key="HotkeyF4">F4　Original / last speed</sys:String>
     <sys:String x:Key="HotkeyF8">F8　Back up save now</sys:String>
     <sys:String x:Key="SafetyTitle">Safety rails are active</sys:String>
@@ -77,7 +77,7 @@
     <sys:String x:Key="GrowthStarts">Start at interval</sys:String>
     <sys:String x:Key="GrowthCap">Multiplier cap</sys:String>
     <sys:String x:Key="ResetAtLevel">Reset growth on a new level</sys:String>
-    <sys:String x:Key="ChallengeRuntimeNote">The safe Steam 1096 object transaction still needs a live test. Challenge-rule writes are disabled in this candidate; its UI and calculations remain ready for verification.</sys:String>
+    <sys:String x:Key="ChallengeRuntimeNote">Enabled only on the verified Steam 1096 child; change one setting at a time and back up before the first use.</sys:String>
 
     <sys:String x:Key="ModesTitle">The other page hidden in the original</sys:String>
     <sys:String x:Key="ModesSubtitle">After completing Adventure once, reveal the original Limbo Page without editing profile unlock data.</sys:String>
@@ -97,7 +97,7 @@
 
     <sys:String x:Key="LabTitle">Test workshop</sys:String>
     <sys:String x:Key="LabSubtitle">Place test objects in an I, Zombie-like workflow with battle, row-count, and special-zombie checks.</sys:String>
-    <sys:String x:Key="RemoteCallsBeta4Note">Beta 4 verifies the official Steam parent and connects to its real popcapgame1 game child. Zombie, ladder, and Night Roof operations still depend on unverified internal calls and remain disabled; health bars, speed, auto collect, and ordinary cheats are ready for testing.</sys:String>
+    <sys:String x:Key="RemoteCallsBeta4Note">Beta 5 enables guarded native calls only on the verified Steam 1096 child; zombie, ladder, and challenge operations still enforce scene, capacity, and object-identity checks.</sys:String>
     <sys:String x:Key="ZombieSpawner">Place a zombie</sys:String>
     <sys:String x:Key="ZombieType">Zombie type</sys:String>
     <sys:String x:Key="Row">Row</sys:String>
@@ -148,7 +148,7 @@
     <sys:String x:Key="Chinese">简体中文</sys:String>
     <sys:String x:Key="English">English</sys:String>
     <sys:String x:Key="Compatibility">Compatibility</sys:String>
-    <sys:String x:Key="CompatibilityText">Beta 4 verifies the Steam wrapper parent's SHA-256, then connects to its popcapgame1 child. The child must be x86, timestamp 0x4D02B058, and pass live object checks.</sys:String>
+    <sys:String x:Key="CompatibilityText">Beta 5 verifies the Steam wrapper parent's SHA-256, then connects to its popcapgame1 child. The child must be x86, timestamp 0x4D02B058, and pass live object checks.</sys:String>
     <sys:String x:Key="Implementation">Implementation</sys:String>
     <sys:String x:Key="ImplementationText">External x86 utility using Win32 process-memory APIs and short remote code thunks to call the game’s own object-creation functions. No DLL injection, EXE edits, or Steam/DRM bypass.</sys:String>
     <sys:String x:Key="References">References &amp; acknowledgements</sys:String>
@@ -164,16 +164,16 @@
     <sys:String x:Key="ErrorGameClosed">The game process has closed.</sys:String>
     <sys:String x:Key="ErrorSaveNotFound">No save directory was found.</sys:String>
     <sys:String x:Key="ErrorGameMustClose">Close the game before restoring a save.</sys:String>
-    <sys:String x:Key="ErrorAdvancedPauseUnavailable">The Steam 1096 Advanced Pause runtime signature has not been verified. This feature is safely disabled and will not guess or write an unknown address.</sys:String>
+    <sys:String x:Key="ErrorAdvancedPauseUnavailable">This process is not the verified Steam 1096 runtime; Advanced Pause is safely disabled.</sys:String>
     <sys:String x:Key="ErrorChallengeUnavailable">The Steam 1096 challenge-rule object transaction has not completed live verification. Background writes are safely disabled in this candidate.</sys:String>
     <sys:String x:Key="ErrorRuntimeSignature">A runtime signature or structure check failed; the write was blocked.</sys:String>
     <sys:String x:Key="ErrorPatchBusy">Another tool already enabled this patch; Plus One Trainer will not take ownership or overwrite it.</sys:String>
     <sys:String x:Key="ErrorPatchOwnership">Patch bytes changed externally; Plus One Trainer refused to overwrite them.</sys:String>
     <sys:String x:Key="ErrorRemoteBusy">A previous internal game call is still running; the new call was blocked.</sys:String>
     <sys:String x:Key="ErrorRemoteTimeout">An internal game call timed out; the safety guard stays owned until it exits.</sys:String>
-    <sys:String x:Key="ErrorRemoteCallsUnavailable">Beta 4 has not verified internal game-function calls; the test workshop and Night Roof remain disabled.</sys:String>
+    <sys:String x:Key="ErrorRemoteCallsUnavailable">This process is not the verified Steam 1096 child runtime; internal calls are blocked.</sys:String>
     <sys:String x:Key="ErrorAdventureRequired">Complete Adventure once before revealing the Limbo Page.</sys:String>
-    <sys:String x:Key="ErrorBobsledUnavailable">Bobsled Team creates four zombies at once. Beta 4 disables all internal spawn calls; a later build must also track and clear exactly those four before enabling it.</sys:String>
+    <sys:String x:Key="ErrorBobsledUnavailable">Bobsled Team creates four zombies at once; it remains disabled to avoid partial objects. Ordinary zombies and safe-scene objects are unaffected.</sys:String>
     <sys:String x:Key="ErrorInvalidNumericSettings">Invalid numeric settings. Check the multipliers, start index, and maximum.</sys:String>
     <sys:String x:Key="RemoteCleanupWaiting">Waiting for the internal game call to finish and restoring its guard. Do not force-close the trainer.</sys:String>
 </ResourceDictionary>

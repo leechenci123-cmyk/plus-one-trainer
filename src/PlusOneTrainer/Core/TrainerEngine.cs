@@ -35,7 +35,7 @@ public sealed class TrainerEngine : IDisposable
     {
         Session = session;
         SaveVault = saveVault;
-        Difficulty = new DifficultyService(session);
+        Difficulty = new DifficultyService(session, enableVerifiedRuntime: session.SupportsRemoteCalls);
     }
 
     public void SetAdvancedPause(bool enabled)
@@ -73,7 +73,7 @@ public sealed class TrainerEngine : IDisposable
         LastSpeed = 1;
     }
 
-    public void SetAutoCollect(bool enabled) => Session.SetPatch(Session.Profile.AutoCollect, enabled);
+    public void SetAutoCollect(bool enabled) => Session.AutoCollect.SetEnabled(enabled);
     public void SetUnlockSunLimit(bool enabled) => Session.SetPatch(Session.Profile.UnlockSunLimit, enabled);
     public void SetNoCooldown(bool enabled) => Session.SetPatchGroup(Session.Profile.NoCooldown, enabled);
     public void SetPlantInvincible(bool enabled) => Session.SetPatchGroup(Session.Profile.PlantInvincible, enabled);
@@ -172,7 +172,18 @@ public sealed class TrainerEngine : IDisposable
         if (type == 25)
             ValidateBossSpawn();
 
-        var createdToken = Session.Calls.PutZombie(row, column, type);
+        var expectedBoard = Session.RequireBoard();
+        var createdToken = Session.Calls.PutZombie(row, column, type, () =>
+        {
+            RequireBattle();
+            if (Session.RequireBoard() != expectedBoard)
+                throw new TrainerException("BattleNeeded", "The battle changed before placement.");
+            ValidateCell(row, column);
+            ValidateZombieTerrain(row, type);
+            if (CaptureAliveZombies().Count > 960)
+                throw new InvalidOperationException("Zombie capacity safety reserve reached.");
+            if (type == 25) ValidateBossSpawn();
+        });
         if (createdToken.Address == 0)
             throw new InvalidOperationException("The game did not create a zombie at the requested cell.");
         ObserveGameContext();
@@ -196,7 +207,17 @@ public sealed class TrainerEngine : IDisposable
         if (Session.Scene is 2 or 3 && row is 2 or 3)
             throw new InvalidOperationException("Standalone ladders are not supported on pool water rows.");
 
-        var createdToken = Session.Calls.PutLadder(row, column);
+        var expectedBoard = Session.RequireBoard();
+        var createdToken = Session.Calls.PutLadder(row, column, () =>
+        {
+            RequireBattle();
+            if (Session.RequireBoard() != expectedBoard)
+                throw new TrainerException("BattleNeeded", "The battle changed before placement.");
+            ValidateCell(row, column);
+            if (!HasLadderPlant(row, column) || HasAnyGridItem(row, column) || CaptureGridItems().Count >= 120 ||
+                (Session.Scene is 2 or 3 && row is 2 or 3))
+                throw new TrainerException("InvalidLadderCell", "The target cell changed before ladder placement.");
+        });
         if (createdToken.Address == 0)
             throw new InvalidOperationException("The game did not create a ladder at the requested cell.");
         ObserveGameContext();
@@ -280,6 +301,8 @@ public sealed class TrainerEngine : IDisposable
             return;
         _shutdownStarted = true;
         Difficulty.Dispose();
+        Session.AutoCollect.Dispose();
+        Session.AdvancedPause.Dispose();
         Session.Calls.BeginClose();
         // Automatic cross-process deletion during shutdown is intentionally avoided.
         // The explicit clear button performs guarded identity checks while a battle is live.
@@ -295,7 +318,8 @@ public sealed class TrainerEngine : IDisposable
         for (var i = 0; i < count; i++)
         {
             var address = array + (uint)i * p.PlantStructSize;
-            if (Session.Memory.ReadBoolean(address + p.PlantDead) ||
+            if ((Session.Memory.ReadUInt32(address + p.PlantDataId) >> 16) == 0 ||
+                Session.Memory.ReadBoolean(address + p.PlantDead) ||
                 Session.Memory.ReadBoolean(address + p.PlantSquished))
                 continue;
             if (Session.Memory.ReadInt32(address + p.PlantRow) != row ||
@@ -361,9 +385,10 @@ public sealed class TrainerEngine : IDisposable
     private void ValidateBossSpawn()
     {
         var board = Session.RequireBoard();
-        var nativeBossBattle = Session.ReadGameMode() == 35 ||
-                               Session.Memory.ReadInt32(board + Session.Profile.AdventureLevel) == 50;
-        if (!nativeBossBattle || Session.Scene is 2 or 3)
+        var mode = Session.ReadGameMode();
+        var nativeBossBattle = mode == 35 ||
+                               (mode == 0 && Session.Memory.ReadInt32(board + Session.Profile.AdventureLevel) == 50);
+        if (!nativeBossBattle || Session.Scene != 5)
             throw new InvalidOperationException("Dr. Zomboss is enabled only in the original final-boss battle. Other scenes may lack required animations and scripts.");
         var p = Session.Profile;
         var alive = CaptureAliveZombies();
@@ -436,7 +461,7 @@ public sealed class TrainerEngine : IDisposable
     {
         if (!SupportsRemoteCalls)
             throw new TrainerException("ErrorRemoteCallsUnavailable",
-                "Internal game calls remain disabled in Beta 4.");
+                "Internal game calls are unavailable for this verified runtime.");
     }
 
     public void Dispose()

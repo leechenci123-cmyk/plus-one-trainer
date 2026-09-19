@@ -25,10 +25,10 @@ public sealed class RemoteGameCalls : IDisposable
         _profile = profile;
     }
 
-    public OwnedZombieToken PutZombie(int row, int column, int type)
+    public OwnedZombieToken PutZombie(int row, int column, int type, Action? validateContext = null)
     {
         if (type == 25)
-            return PutBoss();
+            return PutBoss(validateContext);
 
         uint board = 0;
         uint expectedAddress = 0;
@@ -40,6 +40,7 @@ public sealed class RemoteGameCalls : IDisposable
 
         _ = ExecuteValidated([_profile.CallPutZombie], remote =>
         {
+            validateContext?.Invoke();
             board = RequireBoard();
             var challenge = RequireChallenge(board);
             var view = ReadZombieArray(board, requireFreeSlot: true);
@@ -72,13 +73,14 @@ public sealed class RemoteGameCalls : IDisposable
         return created;
     }
 
-    public OwnedZombieToken PutBoss()
+    public OwnedZombieToken PutBoss(Action? validateContext = null)
     {
         uint board = 0;
         var beforeSize = -1;
         var created = default(OwnedZombieToken);
         _ = ExecuteWithResult([_profile.CallPutZombieInRow], (remote, result) =>
         {
+            validateContext?.Invoke();
             board = RequireBoard();
             beforeSize = ReadZombieArray(board, requireFreeSlot: true).Size;
             return new X86CodeBuilder()
@@ -104,13 +106,14 @@ public sealed class RemoteGameCalls : IDisposable
         return created;
     }
 
-    public OwnedGridItemToken PutLadder(int row, int column)
+    public OwnedGridItemToken PutLadder(int row, int column, Action? validateContext = null)
     {
         uint board = 0;
         var beforeSize = -1;
         var created = default(OwnedGridItemToken);
         _ = ExecuteWithResult([_profile.CallPutLadder], (remote, result) =>
         {
+            validateContext?.Invoke();
             board = RequireBoard();
             beforeSize = ReadGridItemArray(board, requireFreeSlot: true).Size;
             return new X86CodeBuilder()
@@ -243,7 +246,13 @@ public sealed class RemoteGameCalls : IDisposable
                     resultBuffer = _memory.AllocateCodeBuffer(4);
                 var address = unchecked((uint)remote.ToInt32());
                 var resultAddress = resultBuffer == IntPtr.Zero ? 0u : unchecked((uint)resultBuffer.ToInt32());
-                var bytes = build(address, resultAddress);
+                // Standard Win32 thread entry: preserve nonvolatile registers and
+                // return with the lpParameter stack argument removed (RET 4).
+                var body = build(address + 2, resultAddress);
+                if (body.Length == 0 || body[^1] != 0xC3)
+                    throw new InvalidOperationException("A remote call body must end with RET.");
+                var bytes = new byte[] { 0x9C, 0x60 }.Concat(body[..^1])
+                    .Concat(new byte[] { 0x61, 0x9D, 0x31, 0xC0, 0xC2, 0x04, 0x00 }).ToArray();
                 if (bytes.Length > 1024)
                     throw new InvalidOperationException("Remote operation exceeded its fixed code buffer.");
                 _memory.WriteBytes(address, bytes);
@@ -259,7 +268,8 @@ public sealed class RemoteGameCalls : IDisposable
                     throw new TrainerException("ErrorRemoteTimeout",
                         "The game call timed out. Its code page and main-loop guard remain owned until the thread exits.");
                 }
-                _ = thread.ExitCode;
+                if (thread.ExitCode != 0)
+                    throw RuntimeFailure($"The game call exited abnormally (0x{thread.ExitCode:X8}).");
                 if (captureResult)
                     result = _memory.ReadUInt32(resultAddress);
                 if (validateResult is not null)
@@ -291,7 +301,7 @@ public sealed class RemoteGameCalls : IDisposable
         }
     }
 
-    private void RunGuarded(Action action)
+    internal void RunGuarded(Action action)
     {
         lock (_gate)
         {
@@ -332,9 +342,19 @@ public sealed class RemoteGameCalls : IDisposable
 
     private void WaitForWorldToStop()
     {
-        var lawn = _memory.ResolveLawn(_profile);
-        var frame = lawn == 0 ? 10 : Math.Clamp(_memory.ReadInt32(lawn + _profile.FrameDuration), 1, 100);
-        Thread.Sleep(frame * 2);
+        // A delay is not proof of quiescence. Confirm EIP is at the verified EB FE
+        // main-loop gate before inspecting allocations or calling the game.
+        var gate = _memory.Rebase(_profile.MainLoopGuard.Address) - 1;
+        if (!_memory.ReadBytes(gate, 2).SequenceEqual(new byte[] { 0xEB, 0xFE }))
+            throw RuntimeFailure("The main-loop gate is not the expected short self-jump.");
+        var deadline = Environment.TickCount64 + 1500;
+        do
+        {
+            if (_memory.ReadMainThreadInstructionPointer() == gate)
+                return;
+            Thread.Sleep(2);
+        } while (Environment.TickCount64 < deadline);
+        throw RuntimeFailure("The main game thread did not reach the guarded call boundary; no operation was run.");
     }
 
     private DataArrayView ReadZombieArray(uint board, bool requireFreeSlot) =>

@@ -2,6 +2,74 @@ using PlusOneTrainer.Core;
 using PlusOneTrainer.Models;
 using System.IO;
 
+if (args.SequenceEqual(["--live-hook-smoke"]))
+{
+    var result = GameSession.TryAttach();
+    Console.WriteLine($"{result.State}: {result.Details}");
+    using var session = result.Session ?? throw new InvalidOperationException("Verified game required.");
+    var vault = new PlusOneTrainer.Services.SaveVaultService();
+    var backup = vault.CreateBackup("before-live-hook-smoke", session.ExecutablePath);
+    Console.WriteLine($"Verified backup: {backup.Path}");
+    session.Calls.RunGuarded(() => Console.WriteLine("Main-thread boundary verified."));
+    Console.WriteLine($"Advanced pause signature: {session.AdvancedPause.IsSupported}");
+    try
+    {
+        session.AutoCollect.SetEnabled(true);
+        Console.WriteLine("Native collection hook installed.");
+        Thread.Sleep(500);
+        session.AutoCollect.SetEnabled(false);
+        session.AdvancedPause.SetPaused(true);
+        Thread.Sleep(500);
+        session.AdvancedPause.SetPaused(false);
+        Console.WriteLine("Hooks restored; process alive: " + session.Memory.IsAlive);
+    }
+    finally
+    {
+        session.AutoCollect.Dispose();
+        session.AdvancedPause.Dispose();
+    }
+    return 0;
+}
+
+if (args.SequenceEqual(["--live-spawn-smoke"]))
+{
+    var result = GameSession.TryAttach();
+    using var session = result.Session ?? throw new InvalidOperationException(result.Details);
+    if (session.Memory.ResolveBoard(session.Profile) == 0) throw new InvalidOperationException("Enter a playable level first.");
+    var token = session.Calls.PutZombie(0, 8, 0);
+    Console.WriteLine($"Spawned zombie 0x{token.Address:X8}.");
+    session.Calls.RequestOwnedZombieRemoval([token]);
+    Console.WriteLine("Removal requested; process alive: " + session.Memory.IsAlive);
+    return 0;
+}
+
+if (args.SequenceEqual(["--live-context"]))
+{
+    var result = GameSession.TryAttach();
+    using var session = result.Session ?? throw new InvalidOperationException(result.Details);
+    var lawn = session.Memory.ResolveLawn(session.Profile);
+    var board = session.Memory.ResolveBoard(session.Profile);
+    Console.WriteLine($"UI={session.ReadGameUi()} Mode={session.ReadGameMode()} Battle={session.IsBattle} Lawn=0x{lawn:X8} Board=0x{board:X8}");
+    if (board != 0) Console.WriteLine($"Scene={session.Scene} Level={session.Memory.ReadInt32(board + session.Profile.AdventureLevel)}");
+    return 0;
+}
+
+if (args.SequenceEqual(["--live-pause-smoke"]))
+{
+    var result = GameSession.TryAttach();
+    using var session = result.Session ?? throw new InvalidOperationException(result.Details);
+    var board = session.Memory.ResolveBoard(session.Profile);
+    if (board == 0) throw new InvalidOperationException("Enter a playable level first.");
+    var before = session.Memory.ReadInt32(board + session.Profile.GameClock);
+    session.AdvancedPause.SetPaused(true);
+    var held = session.Memory.ReadInt32(board + session.Profile.GameClock);
+    Thread.Sleep(500);
+    var heldLater = session.Memory.ReadInt32(board + session.Profile.GameClock);
+    session.AdvancedPause.SetPaused(false);
+    Console.WriteLine($"Supported={session.AdvancedPause.IsSupported} Before={before} Held={held} HeldLater={heldLater} Restored={!session.AdvancedPause.IsPaused}");
+    return held == heldLater ? 0 : 1;
+}
+
 if (args.SequenceEqual(["--live-attach-probe"]))
 {
     var result = GameSession.TryAttach();
@@ -27,7 +95,9 @@ var tests = new (string Name, Action Run)[]
     ("Health bar durability math", HealthBarDurabilityMath),
     ("Main window resource references", MainWindowResourceReferences),
     ("Steam runtime timestamp gate", SteamRuntimeTimestampGate),
-    ("Wallet money math", WalletMoneyMath)
+    ("Wallet money math", WalletMoneyMath),
+    ("Save restore removes later files and preserves recovery copy", SaveRestoreExact),
+    ("x86 branch relocation", BranchRelocation)
 };
 
 var failed = 0;
@@ -165,7 +235,7 @@ static void SaveVaultRoundTrip()
         File.WriteAllText(Path.Combine(saves, "user1.dat"), "before");
         File.WriteAllBytes(Path.Combine(nested, "空.dat"), []);
         var vault = Path.Combine(temp, "vault");
-        var service = new PlusOneTrainer.Services.SaveVaultService(vault, saves);
+        var service = new PlusOneTrainer.Services.SaveVaultService(vault, saves, () => false);
         var backup = service.CreateBackup("test");
         File.WriteAllText(Path.Combine(saves, "user1.dat"), "after");
         service.Restore(backup);
@@ -186,7 +256,7 @@ static void SaveVaultBlocksTraversal()
         var backup = Directory.CreateDirectory(Path.Combine(vault, "evil")).FullName;
         File.WriteAllText(Path.Combine(backup, "plus-one-backup.json"),
             "{\"FormatVersion\":1,\"CreatedAtUtc\":\"2026-01-01T00:00:00Z\",\"Reason\":\"test\",\"SourcePath\":\"x\",\"Sha256\":{\"../escape.dat\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\"}}");
-        var service = new PlusOneTrainer.Services.SaveVaultService(vault, saves);
+        var service = new PlusOneTrainer.Services.SaveVaultService(vault, saves, () => false);
         Throws<InvalidDataException>(() => service.Verify(backup));
     }
     finally { Directory.Delete(temp, true); }
@@ -275,6 +345,33 @@ static void WalletMoneyMath()
     Equal(99_999, TrainerEngine.CalculateMoneyRaw(99_950, 1_000));
     Throws<TrainerException>(() => TrainerEngine.CalculateMoneyRaw(-1, 1_000));
     Throws<ArgumentOutOfRangeException>(() => TrainerEngine.CalculateMoneyRaw(1_020, 1));
+}
+
+static void BranchRelocation()
+{
+    var bytes = new X86CodeBuilder().Jump("end").MovEax(12).Label("end").Ret().Build(0x1000);
+    Equal(5, BitConverter.ToInt32(bytes, 1));
+    Throws<InvalidOperationException>(() => new X86CodeBuilder().Jump("missing").Build(0));
+}
+
+static void SaveRestoreExact()
+{
+    var temp = NewTempDirectory();
+    try
+    {
+        var saves = Directory.CreateDirectory(Path.Combine(temp, "saves")).FullName;
+        File.WriteAllText(Path.Combine(saves, "users.dat"), "original");
+        var vault = new PlusOneTrainer.Services.SaveVaultService(Path.Combine(temp, "vault"), saves, () => false);
+        var backup = vault.CreateBackup("original");
+        File.WriteAllText(Path.Combine(saves, "users.dat"), "later");
+        File.WriteAllText(Path.Combine(saves, "game9_0.dat"), "later-level");
+        vault.Restore(backup);
+        Equal("original", File.ReadAllText(Path.Combine(saves, "users.dat")));
+        Equal(false, File.Exists(Path.Combine(saves, "game9_0.dat")));
+        var previous = Directory.GetDirectories(temp, "saves.plus-one-before-restore-*").Single();
+        Equal("later-level", File.ReadAllText(Path.Combine(previous, "game9_0.dat")));
+    }
+    finally { Directory.Delete(temp, true); }
 }
 
 static IEnumerable<string> ExtractResourceKeys(string value)

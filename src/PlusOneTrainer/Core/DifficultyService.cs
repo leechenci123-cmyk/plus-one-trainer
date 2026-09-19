@@ -40,7 +40,7 @@ public sealed class DifficultyService : IDisposable
     {
         if (!IsSupported)
             throw new TrainerException("ErrorChallengeUnavailable",
-                "Challenge-rule writes are disabled until the Steam 1096 object transaction passes live verification.");
+                "Challenge-rule writes are available only for the verified Steam 1096 runtime.");
         lock (_gate)
         {
             _settings = settings.Normalize();

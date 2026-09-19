@@ -221,6 +221,44 @@ public sealed class ProcessMemory : IDisposable
         }
     }
 
+    // The trainer is x86. Obtain a CONTROL context only while the GUI/game thread
+    // is suspended, then always balance our own suspend before returning.
+    internal uint ReadMainThreadInstructionPointer()
+    {
+        if (IntPtr.Size != 4)
+            throw new PlatformNotSupportedException("The native game gate requires the x86 trainer.");
+        var threadId = NativeMethods.GetWindowThreadProcessId(Process.MainWindowHandle, out var owner);
+        if (threadId == 0 || owner != Process.Id)
+            throw new TrainerException("ErrorRuntimeSignature", "The game's main thread could not be identified.");
+        var thread = NativeMethods.OpenThread(0x0002 | 0x0008, false, threadId);
+        if (thread == IntPtr.Zero)
+            throw new Win32Exception(System.Runtime.InteropServices.Marshal.GetLastWin32Error());
+        var buffer = System.Runtime.InteropServices.Marshal.AllocHGlobal(716 + 15);
+        var context = new IntPtr((buffer.ToInt64() + 15) & ~15L);
+        var suspended = false;
+        try
+        {
+            System.Runtime.InteropServices.Marshal.Copy(new byte[716], 0, context, 716);
+            System.Runtime.InteropServices.Marshal.WriteInt32(context, 0x00010001); // CONTEXT_i386 | CONTROL
+            var previous = NativeMethods.SuspendThread(thread);
+            if (previous == uint.MaxValue)
+                throw new Win32Exception(System.Runtime.InteropServices.Marshal.GetLastWin32Error());
+            suspended = true;
+            if (previous != 0)
+                throw new TrainerException("ErrorPatchBusy", "Another tool has suspended the game thread.");
+            if (!NativeMethods.GetThreadContext(thread, context))
+                throw new Win32Exception(System.Runtime.InteropServices.Marshal.GetLastWin32Error());
+            return unchecked((uint)System.Runtime.InteropServices.Marshal.ReadInt32(context, 0xB8));
+        }
+        finally
+        {
+            if (suspended)
+                NativeMethods.ResumeThread(thread);
+            System.Runtime.InteropServices.Marshal.FreeHGlobal(buffer);
+            NativeMethods.CloseHandle(thread);
+        }
+    }
+
     private void ThrowIfClosed()
     {
         if (_disposed || !IsAlive)

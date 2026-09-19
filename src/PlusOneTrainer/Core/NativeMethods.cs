@@ -152,6 +152,22 @@ internal static class NativeMethods
     [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool GetExitCodeThread(IntPtr thread, out uint exitCode);
 
+    [DllImport("kernel32.dll", SetLastError = true)]
+    internal static extern IntPtr OpenThread(uint access, bool inheritHandle, uint threadId);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    internal static extern uint SuspendThread(IntPtr thread);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    internal static extern uint ResumeThread(IntPtr thread);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    internal static extern bool GetThreadContext(IntPtr thread, IntPtr context);
+
+    [DllImport("user32.dll", SetLastError = true)]
+    internal static extern uint GetWindowThreadProcessId(IntPtr window, out uint processId);
+
     [DllImport("user32.dll")]
     internal static extern IntPtr GetForegroundWindow();
 

@@ -27,7 +27,7 @@ Valve documents that the [Steam DRM wrapper modifies an application executable](
 
 ## Modes and terminology
 
-- [PvZ-Portable ChallengeScreen mode table](https://github.com/wszqkzqk/PvZ-Portable/blob/b4f1ba08ab9eed8788bbb3f0d5f75c75d9c06fa6/src/Lawn/Widget/ChallengeScreen.cpp#L46-L110) was used to cross-check Limbo Page membership and internal entries.
+- [PvZ-Portable ChallengeScreen mode table](https://github.com/wszqkzqk/PvZ-Portable/blob/b4f1ba08ab9eed8788bbb3f0d5f75c75d9c06fa6/src/Lawn/Widget/ChallengeScreen.cpp#L46-L110) was used to cross-check Limbo Page membership and internal entries. Its behavior references are not copied into the trainer.
 - [PVZ Wiki: Survival Endless introduction](https://wiki.pvz1.com/doku.php?id=%E6%8A%80%E6%9C%AF%3A%E7%94%9F%E5%AD%98%E6%97%A0%E5%B0%BD%E5%85%A5%E9%97%A8) documents the community convention that one seed selection is 20 waves / 2 flags.
 - PvZ-Portable code independently shows [10 waves per flag](https://github.com/wszqkzqk/PvZ-Portable/blob/b4f1ba08ab9eed8788bbb3f0d5f75c75d9c06fa6/src/Lawn/Board.cpp#L556-L568) and [20 waves per Endless seed selection](https://github.com/wszqkzqk/PvZ-Portable/blob/b4f1ba08ab9eed8788bbb3f0d5f75c75d9c06fa6/src/Lawn/Board.cpp#L9374-L9383).
 
